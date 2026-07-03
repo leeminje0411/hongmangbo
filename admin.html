@@ -347,6 +347,28 @@ input{font-family:inherit}
 }
 .olist-empty .big{font-size:2rem;display:block;margin-bottom:8px}
 
+/* ============ PAGER ============ */
+.pager{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;
+  margin-top:16px;padding-top:14px;border-top:1.5px solid rgba(20,23,42,.08);
+}
+.pbtn{
+  min-width:36px;height:36px;padding:0 10px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:800;
+  border:1.5px solid rgba(20,23,42,.2);border-radius:10px;
+  background:#fff;color:rgba(20,23,42,.65);
+  transition:border-color .15s,background .15s,color .15s;
+}
+.pbtn:hover{border-color:var(--navy);color:var(--ink)}
+.pbtn.on{background:var(--navy);color:#fff;border-color:var(--navy);font-style:italic}
+.pbtn[disabled]{opacity:.3;cursor:not-allowed}
+.pdots{font-weight:800;color:rgba(20,23,42,.35);padding:0 2px}
+.pinfo{
+  flex-basis:100%;text-align:center;order:9;
+  font-size:.72rem;font-weight:700;color:rgba(20,23,42,.4);margin-top:6px;
+}
+
 /* ============ BANK FORM ============ */
 .bank-grid{display:grid;gap:14px}
 @media(min-width:760px){.bank-grid{grid-template-columns:1fr 1.4fr 1fr auto;align-items:end}}
@@ -472,6 +494,7 @@ input{font-family:inherit}
         <div class="olist" id="olist">
           <div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>주문을 불러오는 중…</div>
         </div>
+        <div class="pager" id="pager" hidden></div>
       </section>
 
       <!-- 매출 분석 -->
@@ -554,6 +577,8 @@ var orders = [];
 var seenIds = null;        // 최초 로드 전 null
 var newIds = {};           // 하이라이트 대상
 var filter = 'all';
+var page = 1;
+var PAGE_SIZE = 10;
 var refreshTimer = null;
 var lastSyncAt = null;
 
@@ -785,9 +810,18 @@ function render(){
   if(!shown.length){
     olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' +
       (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요') + '</div>';
+    pagerEl.hidden = true;
     return;
   }
-  var html = shown.map(function(o){
+
+  /* 페이징 — 10건씩 */
+  var totalPages = Math.ceil(shown.length / PAGE_SIZE);
+  if(page > totalPages) page = totalPages;
+  if(page < 1) page = 1;
+  var start = (page - 1) * PAGE_SIZE;
+  var pageItems = shown.slice(start, start + PAGE_SIZE);
+
+  var html = pageItems.map(function(o){
     var k = esc(String(o.id));
     var st = STATUS_LABEL[o.status] ? o.status : 'pending';
     var acts = '';
@@ -810,7 +844,50 @@ function render(){
     '</div>';
   }).join('');
   olist.innerHTML = html;
+  renderPager(shown.length, totalPages, start, pageItems.length);
 }
+
+/* ============ 페이저 ============ */
+var pagerEl = $('pager');
+function pageNums(cur, total){
+  var i, out = [];
+  if(total <= 7){
+    for(i = 1; i <= total; i++) out.push(i);
+    return out;
+  }
+  var set = {};
+  set[1] = 1; set[total] = 1;
+  for(i = cur - 1; i <= cur + 1; i++){ if(i >= 1 && i <= total) set[i] = 1; }
+  var keys = Object.keys(set).map(Number).sort(function(a, b){ return a - b; });
+  var prev = 0;
+  keys.forEach(function(k){
+    if(prev && k - prev > 1) out.push('…');
+    out.push(k);
+    prev = k;
+  });
+  return out;
+}
+function renderPager(total, totalPages, start, count){
+  if(totalPages <= 1){ pagerEl.hidden = true; return; }
+  var s = '<button type="button" class="pbtn" data-page="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + ' aria-label="이전 페이지">←</button>';
+  pageNums(page, totalPages).forEach(function(p){
+    if(p === '…'){ s += '<span class="pdots" aria-hidden="true">…</span>'; return; }
+    s += '<button type="button" class="pbtn' + (p === page ? ' on' : '') + '" data-page="' + p + '">' + p + '</button>';
+  });
+  s += '<button type="button" class="pbtn" data-page="' + (page + 1) + '"' + (page === totalPages ? ' disabled' : '') + ' aria-label="다음 페이지">→</button>';
+  s += '<span class="pinfo">총 ' + total + '건 중 ' + (start + 1) + '–' + (start + count) + '번째</span>';
+  pagerEl.innerHTML = s;
+  pagerEl.hidden = false;
+}
+pagerEl.addEventListener('click', function(e){
+  var btn = e.target.closest('.pbtn');
+  if(!btn || btn.disabled) return;
+  var p = +btn.getAttribute('data-page');
+  if(!p || p === page) return;
+  page = p;
+  render();
+  olist.scrollIntoView({ block: 'start', behavior: 'smooth' });
+});
 
 /* ============ 매출 분석 (일별 등락 차트) ============ */
 var chartDays = 14;
@@ -977,6 +1054,7 @@ tabs.addEventListener('click', function(e){
   var btn = e.target.closest('.tab');
   if(!btn) return;
   filter = btn.getAttribute('data-filter');
+  page = 1;
   Array.prototype.forEach.call(tabs.querySelectorAll('.tab'), function(t){
     t.classList.toggle('on', t === btn);
   });
