@@ -455,6 +455,25 @@ input{font-family:inherit}
         </div>
       </div>
 
+      <!-- 주문 목록 -->
+      <section class="card">
+        <div class="card-head">
+          <h2 class="dash-h2">주문 목록</h2>
+          <div class="tabs" id="tabs" role="tablist">
+            <button type="button" class="tab on" data-filter="all">전체<span class="cnt" id="cAll">0</span></button>
+            <button type="button" class="tab" data-filter="pending">대기<span class="cnt" id="cPending">0</span></button>
+            <button type="button" class="tab" data-filter="sent">발송완료<span class="cnt" id="cSent">0</span></button>
+            <button type="button" class="tab" data-filter="cancelled">취소<span class="cnt" id="cCancelled">0</span></button>
+          </div>
+        </div>
+        <div class="ohead" aria-hidden="true">
+          <span>주문시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
+        </div>
+        <div class="olist" id="olist">
+          <div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>주문을 불러오는 중…</div>
+        </div>
+      </section>
+
       <!-- 매출 분석 -->
       <section class="card">
         <div class="card-head">
@@ -486,25 +505,6 @@ input{font-family:inherit}
           <span class="lg--cnt">▮ 주문 건수 (취소 제외)</span>
           <span class="lg--today">▮ 오늘</span>
         </p>
-      </section>
-
-      <!-- 주문 목록 -->
-      <section class="card">
-        <div class="card-head">
-          <h2 class="dash-h2">주문 목록</h2>
-          <div class="tabs" id="tabs" role="tablist">
-            <button type="button" class="tab on" data-filter="all">전체<span class="cnt" id="cAll">0</span></button>
-            <button type="button" class="tab" data-filter="pending">대기<span class="cnt" id="cPending">0</span></button>
-            <button type="button" class="tab" data-filter="sent">발송완료<span class="cnt" id="cSent">0</span></button>
-            <button type="button" class="tab" data-filter="cancelled">취소<span class="cnt" id="cCancelled">0</span></button>
-          </div>
-        </div>
-        <div class="ohead" aria-hidden="true">
-          <span>주문시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
-        </div>
-        <div class="olist" id="olist">
-          <div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>주문을 불러오는 중…</div>
-        </div>
       </section>
 
       <!-- 계좌 설정 -->
@@ -774,8 +774,14 @@ function render(){
   /* 매출 분석 */
   renderAnalytics();
 
-  /* 목록 */
+  /* 목록 — 입금확인 대기가 항상 맨 위, 그 안에서는 최신순 */
   var shown = orders.filter(function(o){ return filter === 'all' || o.status === filter; });
+  shown.sort(function(a, b){
+    var ap = a.status === 'pending' ? 0 : 1;
+    var bp = b.status === 'pending' ? 0 : 1;
+    if(ap !== bp) return ap - bp;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
   if(!shown.length){
     olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' +
       (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요') + '</div>';
