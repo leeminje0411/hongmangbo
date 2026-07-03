@@ -518,7 +518,7 @@ input{font-family:inherit}
             <p class="kval" id="kWeek">0원</p>
           </div>
           <div class="kpi">
-            <p class="klbl">일평균 매출 (7일)</p>
+            <p class="klbl" id="kAvgLbl">일평균 매출</p>
             <p class="kval" id="kAvg">0원</p>
           </div>
         </div>
@@ -946,7 +946,22 @@ function renderAnalytics(){
   var weekSum = 0;
   week.forEach(function(d){ weekSum += d.rev; });
   $('kWeek').textContent = won(weekSum);
-  $('kAvg').textContent = won(Math.round(weekSum / 7));
+
+  /* 일평균 — 판매 시작(첫 주문일) 이전의 0원 날짜는 평균에서 제외 */
+  var firstKey = null;
+  orders.forEach(function(o){
+    var k = dayKeySeoul(new Date(o.created_at));
+    if(!firstKey || k < firstKey) firstKey = k;
+  });
+  var activeDays = 7;
+  if(firstKey){
+    var diffDays = Math.floor(
+      (new Date(dayKeySeoul(new Date()) + 'T00:00:00+09:00') - new Date(firstKey + 'T00:00:00+09:00')) / 86400000
+    ) + 1;
+    activeDays = Math.max(1, Math.min(7, diffDays));
+  }
+  $('kAvg').textContent = won(Math.round(weekSum / activeDays));
+  $('kAvgLbl').textContent = '일평균 매출 (판매 ' + activeDays + '일 기준)';
   var deltaEl = $('kDelta');
   var diff = today.rev - yday.rev;
   if(diff > 0){ deltaEl.className = 'delta delta--up'; deltaEl.textContent = '▲ ' + won(diff) + ' 어제보다'; }
