@@ -826,8 +826,12 @@ function render(){
     var st = STATUS_LABEL[o.status] ? o.status : 'pending';
     var acts = '';
     if(o.status === 'pending'){
-      acts = '<button type="button" class="abtn abtn--ok" data-act="sent" data-id="' + k + '">✓ 발송 완료</button>' +
+      acts = '<button type="button" class="abtn abtn--ok" data-resend="' + k + '">✉ 메일 발송</button>' +
+             '<button type="button" class="abtn abtn--revert" data-act="sent" data-id="' + k + '">✓ 완료처리만</button>' +
              '<button type="button" class="abtn abtn--cancel" data-act="cancelled" data-id="' + k + '">취소</button>';
+    } else if(o.status === 'sent'){
+      acts = '<button type="button" class="abtn abtn--revert" data-resend="' + k + '">✉ 재발송</button>' +
+             '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로</button>';
     } else {
       acts = '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로 되돌리기</button>';
     }
@@ -1065,9 +1069,24 @@ tabs.addEventListener('click', function(e){
 olist.addEventListener('click', function(e){
   var emailBtn = e.target.closest('.email-btn');
   if(emailBtn){ copyText(emailBtn.getAttribute('data-email')); return; }
+  var rsBtn = e.target.closest('[data-resend]');
+  if(rsBtn){ resendOrder(rsBtn.getAttribute('data-resend'), rsBtn); return; }
   var actBtn = e.target.closest('.abtn');
   if(actBtn){ changeStatus(actBtn.getAttribute('data-id'), actBtn.getAttribute('data-act')); }
 });
+
+/* ============ 전자책 메일 (재)발송 ============ */
+function resendOrder(id, btn){
+  if(btn){ btn.disabled = true; btn.textContent = '발송 중…'; }
+  api('resend', { id: id }).then(function(){
+    toast('전자책 메일을 발송했어요 ✉️', 'ok');
+    loadOrders(false);
+  }).catch(function(err){
+    if(err.net){ netBanner.hidden = false; }
+    toast('메일 발송에 실패했어요 — 다시 시도해주세요', 'err');
+    render();
+  });
+}
 
 function copyText(text){
   if(!text) return;
