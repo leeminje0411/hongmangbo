@@ -202,6 +202,34 @@ input{font-family:inherit}
 .tab:hover{border-color:var(--navy)}
 .tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
+/* ============ ANALYTICS ============ */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--cream);border-radius:14px;padding:12px 14px}
+.kpi .klbl{font-size:.72rem;font-weight:800;color:rgba(20,23,42,.5);margin-bottom:2px}
+.kpi .kval{font-size:clamp(1.05rem,3.5vw,1.35rem);font-weight:900;font-style:italic;letter-spacing:-.03em;line-height:1.2}
+.delta{display:inline-block;font-size:.72rem;font-weight:900;border-radius:999px;padding:3px 9px;margin-top:6px}
+.delta--up{background:rgba(230,0,45,.09);color:var(--red)}
+.delta--down{background:rgba(37,99,235,.1);color:#2563EB}
+.delta--flat{background:rgba(20,23,42,.06);color:rgba(20,23,42,.55)}
+.chart-wrap{position:relative;margin-top:4px}
+.chart-wrap svg{display:block;width:100%;height:auto}
+.chart-tip{
+  position:absolute;z-index:5;pointer-events:none;
+  background:var(--navy);color:#fff;border-radius:10px;
+  padding:8px 12px;font-size:.78rem;font-weight:700;line-height:1.5;
+  box-shadow:0 10px 24px -8px rgba(11,15,31,.5);
+  transform:translate(-50%,-100%);white-space:nowrap;text-align:center;
+}
+.chart-tip .tt-rev{font-weight:900;font-style:italic;color:var(--yellow);font-size:.92rem}
+.chart-empty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;color:rgba(20,23,42,.4);text-align:center;padding:0 20px;
+}
+.chart-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:.72rem;font-weight:800;color:rgba(20,23,42,.5)}
+.chart-legend .lg--rev{color:var(--red)}
+.chart-legend .lg--cnt{color:rgba(11,15,31,.5)}
+.chart-legend .lg--today{color:#B99500}
+
 /* ============ ORDER LIST ============ */
 .ohead{display:none}
 @media(min-width:900px){
@@ -423,6 +451,39 @@ input{font-family:inherit}
           <p class="num" id="stRevenue">0원</p>
         </div>
       </div>
+
+      <!-- 매출 분석 -->
+      <section class="card">
+        <div class="card-head">
+          <h2 class="dash-h2">매출 분석</h2>
+          <div class="tabs" id="chartTabs">
+            <button type="button" class="tab" data-days="7">7일</button>
+            <button type="button" class="tab on" data-days="14">14일</button>
+            <button type="button" class="tab" data-days="30">30일</button>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi">
+            <p class="klbl">오늘 매출</p>
+            <p class="kval" id="kToday">0원</p>
+            <span class="delta delta--flat" id="kDelta">—</span>
+          </div>
+          <div class="kpi">
+            <p class="klbl">최근 7일 매출</p>
+            <p class="kval" id="kWeek">0원</p>
+          </div>
+          <div class="kpi">
+            <p class="klbl">일평균 매출 (7일)</p>
+            <p class="kval" id="kAvg">0원</p>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chartWrap"></div>
+        <p class="chart-legend">
+          <span class="lg--rev">━ 매출 (발송완료 기준)</span>
+          <span class="lg--cnt">▮ 주문 건수 (취소 제외)</span>
+          <span class="lg--today">▮ 오늘</span>
+        </p>
+      </section>
 
       <!-- 주문 목록 -->
       <section class="card">
@@ -707,6 +768,9 @@ function render(){
     lastSyncEl.textContent = '마지막 갱신 ' + pad(lastSyncAt.getHours()) + ':' + pad(lastSyncAt.getMinutes()) + ':' + pad(lastSyncAt.getSeconds());
   }
 
+  /* 매출 분석 */
+  renderAnalytics();
+
   /* 목록 */
   var shown = orders.filter(function(o){ return filter === 'all' || o.status === filter; });
   if(!shown.length){
@@ -738,6 +802,166 @@ function render(){
   }).join('');
   olist.innerHTML = html;
 }
+
+/* ============ 매출 분석 (일별 등락 차트) ============ */
+var chartDays = 14;
+var chartWrap = $('chartWrap');
+var chartData = [], chartXs = [], chartYs = [];
+
+function dayKeySeoul(d){ return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' }); }
+var WD = ['일','월','화','수','목','금','토'];
+function keyLabel(k){ return (+k.slice(5,7)) + '/' + (+k.slice(8,10)); }
+function keyLabelFull(k){ return keyLabel(k) + ' (' + WD[new Date(k + 'T00:00:00+09:00').getDay()] + ')'; }
+function wonShort(v){
+  if(v >= 10000){
+    var man = v / 10000;
+    return (man % 1 ? man.toFixed(1) : man) + '만';
+  }
+  return v ? v.toLocaleString('ko-KR') : '0';
+}
+function niceCeil(v){
+  if(v <= 0) return 10000;
+  var pow = Math.pow(10, Math.floor(Math.log(v) / Math.LN10));
+  var f = v / pow;
+  var nf = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10;
+  return nf * pow;
+}
+function buildDaily(days){
+  var map = {};
+  orders.forEach(function(o){
+    var k = dayKeySeoul(new Date(o.created_at));
+    var m = map[k] || (map[k] = { rev: 0, cnt: 0 });
+    if(o.status === 'sent') m.rev += Number(o.amount) || 0;
+    if(o.status !== 'cancelled') m.cnt++;
+  });
+  var out = [];
+  for(var i = days - 1; i >= 0; i--){
+    var k = dayKeySeoul(new Date(Date.now() - i * 86400000));
+    var m = map[k] || { rev: 0, cnt: 0 };
+    out.push({ key: k, rev: m.rev, cnt: m.cnt });
+  }
+  return out;
+}
+
+function renderAnalytics(){
+  if(!chartWrap) return;
+
+  var data = buildDaily(chartDays);
+  var week = buildDaily(7);
+  var n = data.length;
+
+  /* --- KPI --- */
+  var today = data[n-1], yday = data[n-2] || { rev: 0 };
+  $('kToday').textContent = won(today.rev);
+  var weekSum = 0;
+  week.forEach(function(d){ weekSum += d.rev; });
+  $('kWeek').textContent = won(weekSum);
+  $('kAvg').textContent = won(Math.round(weekSum / 7));
+  var deltaEl = $('kDelta');
+  var diff = today.rev - yday.rev;
+  if(diff > 0){ deltaEl.className = 'delta delta--up'; deltaEl.textContent = '▲ ' + won(diff) + ' 어제보다'; }
+  else if(diff < 0){ deltaEl.className = 'delta delta--down'; deltaEl.textContent = '▼ ' + won(-diff) + ' 어제보다'; }
+  else { deltaEl.className = 'delta delta--flat'; deltaEl.textContent = '— 어제와 동일'; }
+
+  /* --- 차트 --- */
+  var w = Math.max(chartWrap.clientWidth || 0, 300);
+  var h = 230, padL = 48, padR = 14, padT = 16, padB = 26;
+  var innerW = w - padL - padR, innerH = h - padT - padB, base = padT + innerH;
+  var maxRev = 0, maxCnt = 0;
+  data.forEach(function(d){ if(d.rev > maxRev) maxRev = d.rev; if(d.cnt > maxCnt) maxCnt = d.cnt; });
+  var hasData = maxRev > 0 || maxCnt > 0;
+  var yMax = niceCeil(maxRev);
+  function X(i){ return n === 1 ? padL + innerW / 2 : padL + i * (innerW / (n - 1)); }
+  function Y(v){ return padT + (1 - v / yMax) * innerH; }
+
+  var s = '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="일별 매출 그래프">';
+  s += '<defs><linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">' +
+       '<stop offset="0" stop-color="#E6002D" stop-opacity=".28"/>' +
+       '<stop offset="1" stop-color="#E6002D" stop-opacity="0"/></linearGradient></defs>';
+
+  [0, .5, 1].forEach(function(f){
+    var v = yMax * f, yy = Y(v);
+    s += '<line x1="' + padL + '" y1="' + yy + '" x2="' + (w - padR) + '" y2="' + yy + '" stroke="rgba(20,23,42,.08)" stroke-width="1"/>' +
+         '<text x="' + (padL - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" font-weight="700" fill="rgba(20,23,42,.4)">' + wonShort(v) + '</text>';
+  });
+
+  var step = n > 1 ? innerW / (n - 1) : innerW;
+  var barW = Math.max(4, Math.min(18, step * .45));
+  data.forEach(function(d, i){
+    if(!d.cnt) return;
+    var bh = maxCnt ? (d.cnt / maxCnt) * innerH * .3 : 0;
+    s += '<rect x="' + (X(i) - barW / 2) + '" y="' + (base - bh) + '" width="' + barW + '" height="' + bh + '" rx="3" fill="' + (i === n - 1 ? 'rgba(255,214,69,.9)' : 'rgba(11,15,31,.10)') + '"/>';
+  });
+
+  if(hasData){
+    var pts = data.map(function(d, i){ return X(i) + ',' + Y(d.rev); });
+    s += '<path d="M' + pts.join(' L') + ' L' + X(n - 1) + ',' + base + ' L' + X(0) + ',' + base + ' Z" fill="url(#gRev)"/>';
+    s += '<path d="M' + pts.join(' L') + '" fill="none" stroke="#E6002D" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    data.forEach(function(d, i){
+      var last = i === n - 1;
+      s += '<circle cx="' + X(i) + '" cy="' + Y(d.rev) + '" r="' + (last ? 5 : 3.5) + '" fill="' + (last ? '#E6002D' : '#fff') + '" stroke="#E6002D" stroke-width="2"/>';
+    });
+  }
+
+  var xEvery = chartDays <= 7 ? 1 : chartDays <= 14 ? 2 : 5;
+  data.forEach(function(d, i){
+    var isLast = i === n - 1;
+    if(!isLast && i % xEvery !== 0) return;
+    if(!isLast && xEvery > 1 && n - 1 - i < xEvery) return; /* '오늘' 라벨과 겹침 방지 */
+    s += '<text x="' + X(i) + '" y="' + (h - 8) + '" text-anchor="middle" font-size="11" font-weight="' + (isLast ? '900' : '700') + '" fill="' + (isLast ? '#E6002D' : 'rgba(20,23,42,.45)') + '">' + (isLast ? '오늘' : keyLabel(d.key)) + '</text>';
+  });
+
+  data.forEach(function(d, i){
+    var x0 = i === 0 ? 0 : (X(i - 1) + X(i)) / 2;
+    var x1 = i === n - 1 ? w : (X(i) + X(i + 1)) / 2;
+    s += '<rect class="hitcol" data-i="' + i + '" x="' + x0 + '" y="0" width="' + (x1 - x0) + '" height="' + h + '" fill="transparent"/>';
+  });
+  s += '</svg>';
+  s += '<div class="chart-tip" id="chartTip" hidden></div>';
+  if(!hasData){ s += '<div class="chart-empty">아직 매출 데이터가 없어요 — 주문이 들어오면 자동으로 그려집니다 📈</div>'; }
+
+  chartWrap.innerHTML = s;
+  chartData = data;
+  chartXs = data.map(function(d, i){ return X(i); });
+  chartYs = data.map(function(d){ return Y(d.rev); });
+}
+
+function chartHover(e){
+  var tip = $('chartTip');
+  if(!tip) return;
+  var hit = e.target && e.target.closest ? e.target.closest('.hitcol') : null;
+  if(!hit){ tip.hidden = true; return; }
+  var i = +hit.getAttribute('data-i');
+  var d = chartData[i];
+  if(!d){ tip.hidden = true; return; }
+  tip.innerHTML = '<div>' + keyLabelFull(d.key) + '</div>' +
+                  '<div class="tt-rev">' + won(d.rev) + '</div>' +
+                  '<div>주문 ' + d.cnt + '건</div>';
+  tip.hidden = false;
+  var wrapW = chartWrap.clientWidth || 320;
+  tip.style.left = Math.max(70, Math.min(chartXs[i], wrapW - 70)) + 'px';
+  tip.style.top = Math.max(70, Math.min(chartYs[i], 170)) + 'px';
+}
+chartWrap.addEventListener('mousemove', chartHover);
+chartWrap.addEventListener('click', chartHover);
+chartWrap.addEventListener('mouseleave', function(){
+  var tip = $('chartTip');
+  if(tip) tip.hidden = true;
+});
+$('chartTabs').addEventListener('click', function(e){
+  var btn = e.target.closest('.tab');
+  if(!btn) return;
+  chartDays = +btn.getAttribute('data-days') || 14;
+  Array.prototype.forEach.call($('chartTabs').querySelectorAll('.tab'), function(t){
+    t.classList.toggle('on', t === btn);
+  });
+  renderAnalytics();
+});
+var chartResizeT;
+window.addEventListener('resize', function(){
+  clearTimeout(chartResizeT);
+  chartResizeT = setTimeout(function(){ if(!dashView.hidden) renderAnalytics(); }, 200);
+});
 
 /* ============ 필터 탭 ============ */
 tabs.addEventListener('click', function(e){
