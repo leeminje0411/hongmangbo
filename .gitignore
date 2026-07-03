@@ -1,0 +1,7 @@
+.DS_Store
+.claude/
+# 원본 소스 파일(용량 큼) — 웹용 압축본은 assets/에 있음
+*.mp4
+!assets/*.mp4
+kling_*.png
+Screenshot*.png

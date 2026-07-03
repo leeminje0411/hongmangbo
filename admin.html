@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>관리자 — 홍맹보 영상 제작법</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ============ RESET & TOKENS ============ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#E6002D;
+  --red-deep:#B80024;
+  --navy:#0B0F1F;
+  --ink:#14172A;
+  --cream:#F6F3EC;
+  --paper:#FFFFFF;
+  --yellow:#FFD645;
+  --green:#1B9E4B;
+  --green-soft:#E4F5EA;
+  --line:rgba(20,23,42,.14);
+  --font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue','Segoe UI','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --wall:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='150' viewBox='0 0 220 150'%3E%3Cg fill='%23ffffff' fill-opacity='0.07'%3E%3Crect x='12' y='14' width='60' height='20' rx='10'/%3E%3Crect x='86' y='14' width='42' height='20' rx='10'/%3E%3Crect x='142' y='14' width='64' height='20' rx='10'/%3E%3Crect x='38' y='64' width='50' height='20' rx='10'/%3E%3Crect x='102' y='64' width='66' height='20' rx='10'/%3E%3Crect x='182' y='64' width='26' height='20' rx='10'/%3E%3Crect x='22' y='114' width='46' height='20' rx='10'/%3E%3Crect x='82' y='114' width='68' height='20' rx='10'/%3E%3Crect x='164' y='114' width='42' height='20' rx='10'/%3E%3C/g%3E%3C/svg%3E");
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:var(--cream);
+  line-height:1.6;
+  letter-spacing:-0.01em;
+  word-break:keep-all;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+::selection{background:var(--red);color:#fff}
+.container{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+@media(min-width:768px){.container{padding:0 32px}}
+[hidden]{display:none!important}
+
+/* ============ LOGIN ============ */
+.login-wrap{
+  min-height:100vh;min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--red) var(--wall);background-size:220px 150px;
+  padding:24px 16px calc(24px + env(safe-area-inset-bottom));
+  position:relative;
+}
+.login-wrap::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.10) 0%,transparent 55%),
+             linear-gradient(180deg,transparent 55%,rgba(122,0,24,.55) 100%);
+}
+.login-card{
+  position:relative;z-index:1;width:100%;max-width:400px;
+  background:#fff;border:2px solid var(--navy);border-radius:24px;
+  padding:36px 28px 30px;box-shadow:8px 8px 0 var(--navy);
+}
+.login-logo{
+  display:inline-block;font-weight:900;font-style:italic;font-size:1rem;letter-spacing:-0.03em;
+  background:var(--red);color:#fff;padding:6px 14px;border-radius:8px;
+  box-shadow:3px 3px 0 var(--navy);transform:rotate(-2deg);margin-bottom:20px;
+}
+.login-card h1{
+  font-size:1.7rem;font-weight:900;font-style:italic;letter-spacing:-0.04em;line-height:1.2;
+  margin-bottom:6px;
+}
+.login-card .sub{font-size:.88rem;color:rgba(20,23,42,.55);margin-bottom:24px}
+.login-field label{display:block;font-size:.85rem;font-weight:800;margin-bottom:8px}
+.login-field input{
+  width:100%;font-size:16px;color:var(--ink);
+  padding:15px 16px;border:2px solid rgba(20,23,42,.16);border-radius:14px;
+  background:#fff;transition:border-color .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.login-field input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 4px rgba(230,0,45,.12)}
+.login-err{
+  display:none;margin-top:12px;font-size:.85rem;font-weight:700;color:var(--red);
+}
+.login-err.show{display:block}
+.login-card .btn{width:100%;margin-top:18px}
+.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{
+  10%,90%{transform:translateX(-2px)}
+  20%,80%{transform:translateX(4px)}
+  30%,50%,70%{transform:translateX(-7px)}
+  40%,60%{transform:translateX(7px)}
+}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-weight:800;font-size:.98rem;letter-spacing:-0.01em;
+  padding:15px 24px;border-radius:999px;border:none;
+  transition:transform .15s ease,background .15s ease,box-shadow .15s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn--red{background:var(--red);color:#fff;box-shadow:0 12px 28px -12px rgba(230,0,45,.6)}
+.btn--red:hover{background:var(--red-deep)}
+.btn[disabled]{opacity:.6;cursor:not-allowed;transform:none!important}
+.spinner{
+  width:16px;height:16px;border-radius:50%;flex:none;
+  border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;
+  animation:spin .7s linear infinite;display:none;
+}
+.btn.is-loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============ TOPBAR ============ */
+.adm-top{
+  position:sticky;top:0;z-index:50;
+  background:var(--navy);color:#fff;
+  padding:10px 0;
+  box-shadow:0 6px 20px -10px rgba(11,15,31,.5);
+}
+.adm-top .container{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.adm-logo{
+  font-weight:900;font-style:italic;font-size:.92rem;letter-spacing:-0.03em;
+  background:var(--red);color:#fff;padding:5px 12px;border-radius:8px;
+  box-shadow:2px 2px 0 rgba(0,0,0,.4);transform:rotate(-2deg);white-space:nowrap;
+}
+.adm-top-right{display:flex;align-items:center;gap:8px;min-width:0}
+.last-sync{
+  font-size:.72rem;font-weight:600;color:rgba(255,255,255,.55);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.icon-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.8rem;font-weight:800;color:#fff;background:rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.25);border-radius:999px;
+  padding:7px 14px;transition:background .15s,border-color .15s;white-space:nowrap;
+}
+.icon-btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45)}
+.icon-btn .ri{display:inline-block;font-weight:900;transition:transform .3s}
+.icon-btn.is-loading .ri{animation:spin .7s linear infinite}
+
+/* ============ BANNERS ============ */
+.banner{
+  display:flex;gap:10px;align-items:flex-start;
+  border-radius:14px;padding:13px 16px;margin-bottom:12px;
+  font-size:.88rem;font-weight:700;line-height:1.5;
+}
+.banner--net{background:#FFF1F3;border:2px solid rgba(230,0,45,.45);color:#9B0020}
+.banner--warn{background:var(--yellow);border:2px solid var(--navy);color:var(--navy);box-shadow:3px 3px 0 var(--navy)}
+.flow-hint{
+  display:block;
+  font-size:.8rem;font-weight:700;color:rgba(20,23,42,.55);
+  padding:10px 16px;border:1.5px dashed rgba(20,23,42,.3);border-radius:999px;
+  margin-bottom:20px;line-height:1.5;
+}
+.flow-hint b{color:var(--ink)}
+.flow-hint .arr{color:var(--red);font-weight:900}
+
+/* ============ DASH LAYOUT ============ */
+.dash-body{padding:20px 0 60px}
+.dash-h2{
+  font-size:1.15rem;font-weight:900;font-style:italic;letter-spacing:-0.03em;
+  display:flex;align-items:center;gap:8px;margin-bottom:12px;
+}
+.dash-h2::before{content:'';width:16px;height:3px;background:var(--red);border-radius:2px;flex:none}
+
+/* ============ STATS ============ */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr);gap:14px}}
+.stat{
+  background:#fff;border:2px solid var(--navy);border-radius:16px;
+  padding:14px 16px;box-shadow:4px 4px 0 var(--navy);
+}
+.stat .lbl{font-size:.72rem;font-weight:800;letter-spacing:.02em;color:rgba(20,23,42,.5);margin-bottom:4px}
+.stat .num{
+  font-size:clamp(1.5rem,5.5vw,1.9rem);font-weight:900;font-style:italic;
+  letter-spacing:-0.04em;line-height:1.1;
+}
+.stat .num small{font-size:.6em;font-style:normal;margin-left:2px}
+.stat--hot{background:var(--red);border-color:var(--navy);color:#fff}
+.stat--hot .lbl{color:rgba(255,255,255,.75)}
+.stat--money .num{font-size:clamp(1.15rem,4.5vw,1.55rem)}
+
+/* ============ CARD ============ */
+.card{
+  background:#fff;border:2px solid var(--navy);border-radius:20px;
+  box-shadow:6px 6px 0 var(--navy);
+  padding:18px 16px;margin-bottom:26px;
+}
+@media(min-width:768px){.card{padding:24px}}
+.card-head{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:14px;
+}
+
+/* ============ FILTER TABS ============ */
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{
+  font-size:.78rem;font-weight:800;letter-spacing:-0.01em;
+  padding:7px 13px;border-radius:999px;
+  border:1.5px solid rgba(20,23,42,.25);background:#fff;color:rgba(20,23,42,.65);
+  transition:background .15s,color .15s,border-color .15s;
+}
+.tab .cnt{font-style:italic;font-weight:900;margin-left:3px}
+.tab:hover{border-color:var(--navy)}
+.tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ============ ORDER LIST ============ */
+.ohead{display:none}
+@media(min-width:900px){
+  .ohead{
+    display:grid;
+    grid-template-columns:100px 90px 118px minmax(0,1.3fr) 96px 108px 214px;
+    gap:10px;align-items:center;
+    padding:8px 12px;border-bottom:2px solid var(--navy);
+    font-size:.68rem;font-weight:800;letter-spacing:.06em;color:rgba(20,23,42,.45);
+    text-transform:uppercase;
+  }
+}
+.olist{display:grid;gap:10px;padding-top:10px}
+@media(min-width:620px) and (max-width:899px){.olist{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.olist{gap:0;padding-top:0}}
+
+.orow{
+  border:1.5px solid rgba(20,23,42,.16);border-radius:14px;
+  padding:14px;position:relative;
+  display:grid;gap:8px;
+  grid-template-columns:1fr auto;
+  grid-template-areas:
+    "name status"
+    "dep dep"
+    "email email"
+    "meta meta"
+    "memo memo"
+    "act act";
+  background:#fff;
+  transition:background .2s;
+}
+@media(min-width:900px){
+  .orow{
+    grid-template-columns:100px 90px 118px minmax(0,1.3fr) 96px 108px 214px;
+    grid-template-areas:"time name dep email amount status act" "memo memo memo memo memo memo memo";
+    gap:10px;align-items:center;
+    border:none;border-bottom:1px solid rgba(20,23,42,.1);border-radius:0;
+    padding:13px 12px;
+  }
+  .orow:hover{background:var(--cream)}
+}
+.orow.is-new{animation:flashNew 2.4s ease 2}
+@keyframes flashNew{
+  0%{background:var(--yellow)}
+  60%{background:var(--yellow)}
+  100%{background:#fff}
+}
+.oc-time{grid-area:time;display:none}
+@media(min-width:900px){.oc-time{display:block}}
+.oc-time .rel{font-size:.82rem;font-weight:800}
+.oc-time .abs,.o-meta .abs{font-size:.7rem;color:rgba(20,23,42,.45);font-weight:600}
+.oc-name{grid-area:name;font-weight:800;font-size:.95rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-dep{grid-area:dep;min-width:0}
+.oc-dep .dep-val{font-weight:900;font-size:1.02rem;letter-spacing:-0.02em}
+@media(max-width:899px){
+  .oc-dep{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--cream);border-radius:10px;padding:7px 12px;
+  }
+  .oc-dep .dep-val{font-size:1.06rem}
+}
+.mini-lbl{font-size:.66rem;font-weight:800;letter-spacing:.05em;color:rgba(20,23,42,.45);flex:none}
+@media(min-width:900px){.mini-lbl{display:none}}
+.oc-email{grid-area:email;min-width:0}
+.email-btn{
+  display:inline-flex;align-items:center;gap:6px;max-width:100%;
+  background:none;border:none;padding:0;
+  font-size:.85rem;font-weight:700;color:var(--ink);text-align:left;
+  border-bottom:1.5px dashed rgba(20,23,42,.3);
+  transition:color .15s,border-color .15s;
+}
+.email-btn:hover{color:var(--red);border-color:var(--red)}
+.email-btn .ev{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.email-btn .cp{flex:none;font-size:.75rem;opacity:.5}
+.oc-amount{grid-area:amount;font-weight:900;font-style:italic;font-size:.95rem;letter-spacing:-0.02em}
+@media(max-width:899px){.oc-amount{display:none}}
+.o-meta{grid-area:meta;display:flex;align-items:baseline;gap:10px;font-size:.8rem}
+.o-meta .amt{font-weight:900;font-style:italic;font-size:.95rem}
+.o-meta .rel{font-weight:700;color:rgba(20,23,42,.55)}
+@media(min-width:900px){.o-meta{display:none}}
+.oc-status{grid-area:status;justify-self:end}
+@media(min-width:900px){.oc-status{justify-self:start}}
+.badge{
+  display:inline-block;font-size:.72rem;font-weight:900;letter-spacing:-0.01em;
+  padding:5px 11px;border-radius:999px;white-space:nowrap;
+}
+.badge--pending{background:var(--yellow);color:var(--navy);border:1.5px solid var(--navy)}
+.badge--sent{background:var(--green-soft);color:#116B36;border:1.5px solid rgba(27,158,75,.5)}
+.badge--cancelled{background:rgba(20,23,42,.07);color:rgba(20,23,42,.5);border:1.5px solid rgba(20,23,42,.15)}
+.oc-memo{
+  grid-area:memo;font-size:.78rem;color:rgba(20,23,42,.55);
+  background:var(--cream);border-radius:8px;padding:6px 10px;line-height:1.5;
+}
+@media(min-width:900px){.oc-memo{margin:-4px 0 8px}}
+.oc-act{grid-area:act;display:flex;gap:8px;flex-wrap:wrap}
+.abtn{
+  font-size:.8rem;font-weight:800;letter-spacing:-0.01em;
+  padding:9px 14px;border-radius:999px;border:none;white-space:nowrap;
+  transition:transform .12s,background .15s,opacity .15s;
+}
+.abtn:active{transform:scale(.96)}
+.abtn--ok{background:var(--green);color:#fff;box-shadow:0 8px 18px -8px rgba(27,158,75,.6)}
+.abtn--ok:hover{background:#158540}
+.abtn--cancel{background:#fff;color:rgba(20,23,42,.6);border:1.5px solid rgba(20,23,42,.3)}
+.abtn--cancel:hover{border-color:var(--red);color:var(--red)}
+.abtn--revert{background:#fff;color:var(--ink);border:1.5px solid rgba(20,23,42,.3)}
+.abtn--revert:hover{border-color:var(--navy);background:var(--cream)}
+@media(max-width:899px){.oc-act .abtn{flex:1;padding:11px 10px;text-align:center}}
+.olist-empty{
+  text-align:center;padding:44px 10px;color:rgba(20,23,42,.45);
+  font-weight:700;font-size:.92rem;
+}
+.olist-empty .big{font-size:2rem;display:block;margin-bottom:8px}
+
+/* ============ BANK FORM ============ */
+.bank-grid{display:grid;gap:14px}
+@media(min-width:760px){.bank-grid{grid-template-columns:1fr 1.4fr 1fr auto;align-items:end}}
+.bfield label{display:block;font-size:.82rem;font-weight:800;margin-bottom:7px}
+.bfield input{
+  width:100%;font-size:16px;color:var(--ink);
+  padding:13px 14px;border:2px solid rgba(20,23,42,.16);border-radius:12px;
+  background:#fff;transition:border-color .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.bfield input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 4px rgba(230,0,45,.12)}
+.bank-grid .btn{padding:13px 26px;font-size:.92rem}
+@media(max-width:759px){.bank-grid .btn{width:100%}}
+.bank-note{margin-top:12px;font-size:.78rem;color:rgba(20,23,42,.45);font-weight:600}
+
+/* ============ TOAST ============ */
+.toasts{
+  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);z-index:100;
+  display:flex;flex-direction:column;gap:8px;align-items:center;
+  width:max-content;max-width:calc(100vw - 32px);pointer-events:none;
+}
+.toast{
+  font-size:.86rem;font-weight:800;color:#fff;background:var(--navy);
+  padding:12px 20px;border-radius:999px;
+  box-shadow:0 14px 34px -10px rgba(11,15,31,.6);
+  animation:toastIn .25s cubic-bezier(.2,.8,.2,1);
+  max-width:100%;text-align:center;
+}
+.toast--ok{background:var(--green)}
+.toast--err{background:var(--red)}
+.toast.out{opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:none}}
+
+@media(prefers-reduced-motion:reduce){
+  .shake,.orow.is-new,.toast{animation:none}
+  .btn,.abtn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 로그인 ================= -->
+<div class="login-wrap" id="loginView">
+  <form class="login-card" id="loginForm" novalidate>
+    <span class="login-logo">HMB™ ADMIN</span>
+    <h1>관리자 로그인</h1>
+    <p class="sub">홍맹보 영상 제작법 — 주문 관리 콘솔</p>
+    <div class="login-field">
+      <label for="pw">비밀번호</label>
+      <input type="password" id="pw" autocomplete="current-password" placeholder="관리자 비밀번호" required>
+    </div>
+    <p class="login-err" id="loginErr" role="alert"></p>
+    <button type="submit" class="btn btn--red" id="loginBtn">
+      <span class="spinner" aria-hidden="true"></span>
+      <span id="loginLabel">들어가기</span>
+    </button>
+  </form>
+</div>
+
+<!-- ================= 대시보드 ================= -->
+<div id="dashView" hidden>
+  <header class="adm-top">
+    <div class="container">
+      <span class="adm-logo">HMB™ ADMIN</span>
+      <div class="adm-top-right">
+        <span class="last-sync" id="lastSync"></span>
+        <button type="button" class="icon-btn" id="refreshBtn"><span class="ri" aria-hidden="true">↻</span>새로고침</button>
+        <button type="button" class="icon-btn" id="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dash-body">
+    <div class="container">
+
+      <div class="banner banner--net" id="netBanner" hidden role="alert">
+        <span aria-hidden="true">📡</span>
+        <span>네트워크 오류 — 서버에 연결하지 못했어요. 연결 상태를 확인해주세요. 잠시 후 자동으로 다시 시도합니다.</span>
+      </div>
+
+      <div class="banner banner--warn" id="bankWarn" hidden role="alert">
+        <span aria-hidden="true">⚠️</span>
+        <span>계좌를 설정해야 랜딩페이지에서 결제가 가능합니다. 아래 <b>입금 계좌 설정</b>에서 저장해주세요.</span>
+      </div>
+
+      <p class="flow-hint">💡 <b>입금자명</b>이 은행 앱 입금 내역과 일치하는지 확인 <span class="arr">→</span> PDF를 이메일로 발송 <span class="arr">→</span> <b>[✓ 발송 완료]</b> 클릭</p>
+
+      <!-- 스탯 -->
+      <div class="stats">
+        <div class="stat stat--hot">
+          <p class="lbl">입금확인 대기</p>
+          <p class="num" id="stPending">0<small>건</small></p>
+        </div>
+        <div class="stat">
+          <p class="lbl">오늘 주문</p>
+          <p class="num" id="stToday">0<small>건</small></p>
+        </div>
+        <div class="stat">
+          <p class="lbl">발송 완료</p>
+          <p class="num" id="stSent">0<small>건</small></p>
+        </div>
+        <div class="stat stat--money">
+          <p class="lbl">총 매출 (발송완료 기준)</p>
+          <p class="num" id="stRevenue">0원</p>
+        </div>
+      </div>
+
+      <!-- 주문 목록 -->
+      <section class="card">
+        <div class="card-head">
+          <h2 class="dash-h2">주문 목록</h2>
+          <div class="tabs" id="tabs" role="tablist">
+            <button type="button" class="tab on" data-filter="all">전체<span class="cnt" id="cAll">0</span></button>
+            <button type="button" class="tab" data-filter="pending">대기<span class="cnt" id="cPending">0</span></button>
+            <button type="button" class="tab" data-filter="sent">발송완료<span class="cnt" id="cSent">0</span></button>
+            <button type="button" class="tab" data-filter="cancelled">취소<span class="cnt" id="cCancelled">0</span></button>
+          </div>
+        </div>
+        <div class="ohead" aria-hidden="true">
+          <span>주문시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
+        </div>
+        <div class="olist" id="olist">
+          <div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>주문을 불러오는 중…</div>
+        </div>
+      </section>
+
+      <!-- 계좌 설정 -->
+      <section class="card">
+        <h2 class="dash-h2">입금 계좌 설정</h2>
+        <form id="bankForm" class="bank-grid" novalidate>
+          <div class="bfield">
+            <label for="b-bank">은행명</label>
+            <input type="text" id="b-bank" placeholder="예) 카카오뱅크" autocomplete="off">
+          </div>
+          <div class="bfield">
+            <label for="b-account">계좌번호</label>
+            <input type="text" id="b-account" placeholder="예) 3333-01-1234567" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="bfield">
+            <label for="b-holder">예금주</label>
+            <input type="text" id="b-holder" placeholder="예) 홍길동" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn--red" id="bankBtn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="bankLabel">저장</span>
+          </button>
+        </form>
+        <p class="bank-note">저장하면 랜딩페이지 결제 안내에 바로 반영됩니다.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ 설정 ============ */
+var SUPABASE_URL = 'https://dxlhcyrdsurbaqsezwnr.supabase.co';
+var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4bGhjeXJkc3VyYmFxc2V6d25yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5OTY4NTIsImV4cCI6MjA5ODU3Mjg1Mn0.OGrf0_bAObjL28bN8ujNoev4NTJsYZCpq5P9IaiW8CE';
+var ADMIN_EP = SUPABASE_URL + '/functions/v1/admin';
+var PW_KEY = 'hmb_admin_pw';
+var BASE_TITLE = '관리자 — 홍맹보 영상 제작법';
+var REFRESH_MS = 15000;
+
+/* ============ 상태 ============ */
+var orders = [];
+var seenIds = null;        // 최초 로드 전 null
+var newIds = {};           // 하이라이트 대상
+var filter = 'all';
+var refreshTimer = null;
+var lastSyncAt = null;
+
+/* ============ DOM ============ */
+var $ = function(id){ return document.getElementById(id); };
+var loginView = $('loginView'), dashView = $('dashView');
+var loginForm = $('loginForm'), loginBtn = $('loginBtn'), loginLabel = $('loginLabel'), loginErr = $('loginErr'), pwInput = $('pw');
+var netBanner = $('netBanner'), bankWarn = $('bankWarn');
+var olist = $('olist'), tabs = $('tabs');
+var refreshBtn = $('refreshBtn'), logoutBtn = $('logoutBtn'), lastSyncEl = $('lastSync');
+var bankForm = $('bankForm'), bankBtn = $('bankBtn'), bankLabel = $('bankLabel');
+
+/* ============ 유틸 ============ */
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+function relTime(iso){
+  var t = new Date(iso).getTime();
+  if(isNaN(t)) return '-';
+  var s = Math.floor((Date.now() - t) / 1000);
+  if(s < 10) return '방금 전';
+  if(s < 60) return s + '초 전';
+  if(s < 3600) return Math.floor(s/60) + '분 전';
+  if(s < 86400) return Math.floor(s/3600) + '시간 전';
+  return Math.floor(s/86400) + '일 전';
+}
+function absTime(iso){
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return (d.getMonth()+1) + '/' + d.getDate() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function isToday(iso){
+  var d = new Date(iso), n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+}
+function won(n){
+  var v = Number(n);
+  if(isNaN(v)) return '—';
+  return v.toLocaleString('ko-KR') + '원';
+}
+function getPw(){ return sessionStorage.getItem(PW_KEY) || ''; }
+
+/* ============ 토스트 ============ */
+function toast(msg, type){
+  var box = $('toasts');
+  var el = document.createElement('div');
+  el.className = 'toast' + (type === 'ok' ? ' toast--ok' : type === 'err' ? ' toast--err' : '');
+  el.textContent = msg;
+  box.appendChild(el);
+  setTimeout(function(){ el.classList.add('out'); }, 2400);
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 2800);
+}
+
+/* ============ API ============ */
+function rawCall(password, action, payload){
+  return fetch(ADMIN_EP, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': ANON_KEY,
+      'Authorization': 'Bearer ' + ANON_KEY
+    },
+    body: JSON.stringify({ password: password, action: action, payload: payload || {} })
+  }).then(
+    function(res){
+      if(res.status === 401){ var e = new Error('auth'); e.auth = true; throw e; }
+      return res.json().catch(function(){ return null; }).then(function(data){
+        if(!res.ok || !data || data.ok !== true){ var e = new Error('server'); e.server = true; throw e; }
+        return data;
+      });
+    },
+    function(){ var e = new Error('net'); e.net = true; throw e; }
+  );
+}
+function api(action, payload){
+  return rawCall(getPw(), action, payload).catch(function(err){
+    if(err.auth){ forceLogout(); }
+    throw err;
+  });
+}
+
+/* ============ 로그인 / 로그아웃 ============ */
+loginForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  var pw = pwInput.value;
+  if(!pw){ showLoginErr('비밀번호를 입력해주세요'); return; }
+  loginErr.classList.remove('show');
+  loginBtn.disabled = true;
+  loginBtn.classList.add('is-loading');
+  loginLabel.textContent = '확인 중…';
+
+  rawCall(pw, 'login', {}).then(function(){
+    sessionStorage.setItem(PW_KEY, pw);
+    pwInput.value = '';
+    enterDash();
+  }).catch(function(err){
+    if(err.auth){ showLoginErr('비밀번호가 틀렸어요'); }
+    else { showLoginErr('서버에 연결하지 못했어요. 잠시 후 다시 시도해주세요.'); }
+  }).finally(function(){
+    loginBtn.disabled = false;
+    loginBtn.classList.remove('is-loading');
+    loginLabel.textContent = '들어가기';
+  });
+});
+function showLoginErr(msg){
+  loginErr.textContent = msg;
+  loginErr.classList.add('show');
+  var card = loginForm;
+  card.classList.remove('shake');
+  void card.offsetWidth; /* reflow로 애니메이션 재시작 */
+  card.classList.add('shake');
+  pwInput.focus();
+  pwInput.select();
+}
+function forceLogout(msg){
+  sessionStorage.removeItem(PW_KEY);
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+  orders = []; seenIds = null; newIds = {};
+  document.title = BASE_TITLE;
+  dashView.hidden = true;
+  loginView.hidden = false;
+  if(msg !== false){ toast('세션이 만료됐어요. 다시 로그인해주세요.', 'err'); }
+  setTimeout(function(){ pwInput.focus(); }, 50);
+}
+logoutBtn.addEventListener('click', function(){
+  sessionStorage.removeItem(PW_KEY);
+  if(refreshTimer){ clearInterval(refreshTimer); refreshTimer = null; }
+  orders = []; seenIds = null; newIds = {};
+  document.title = BASE_TITLE;
+  dashView.hidden = true;
+  loginView.hidden = false;
+  olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>주문을 불러오는 중…</div>';
+  toast('로그아웃 했어요');
+  setTimeout(function(){ pwInput.focus(); }, 50);
+});
+
+/* ============ 대시보드 진입 ============ */
+function enterDash(){
+  loginView.hidden = true;
+  dashView.hidden = false;
+  loadOrders(true);
+  loadBank();
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(function(){ loadOrders(false); }, REFRESH_MS);
+}
+
+/* ============ 주문 로드 ============ */
+function loadOrders(showSpin){
+  if(showSpin) refreshBtn.classList.add('is-loading');
+  return api('list_orders').then(function(data){
+    netBanner.hidden = true;
+    var list = data.orders || [];
+    var isFirst = (seenIds === null);
+    if(isFirst){
+      seenIds = {};
+      list.forEach(function(o){ seenIds[String(o.id)] = 1; });
+    } else {
+      list.forEach(function(o){
+        var k = String(o.id);
+        if(!seenIds[k]){
+          seenIds[k] = 1;
+          if(o.status === 'pending'){ newIds[k] = 1; }
+        }
+      });
+    }
+    orders = list;
+    lastSyncAt = new Date();
+    render();
+    /* 하이라이트는 한 번만 */
+    if(Object.keys(newIds).length){
+      setTimeout(function(){ newIds = {}; }, 5000);
+    }
+  }).catch(function(err){
+    if(err.net){ netBanner.hidden = false; }
+    else if(err.server){ toast('주문 목록을 불러오지 못했어요', 'err'); }
+    /* err.auth 는 api()에서 처리됨 */
+  }).finally(function(){
+    refreshBtn.classList.remove('is-loading');
+  });
+}
+refreshBtn.addEventListener('click', function(){ loadOrders(true); });
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden && !dashView.hidden){ loadOrders(false); }
+});
+
+/* ============ 렌더 ============ */
+var STATUS_LABEL = { pending:'입금확인 대기', sent:'발송완료', cancelled:'취소' };
+
+function render(){
+  /* 스탯 */
+  var pending = 0, sent = 0, cancelled = 0, today = 0, revenue = 0;
+  orders.forEach(function(o){
+    if(o.status === 'pending') pending++;
+    else if(o.status === 'sent'){ sent++; revenue += Number(o.amount) || 0; }
+    else if(o.status === 'cancelled') cancelled++;
+    if(isToday(o.created_at)) today++;
+  });
+  $('stPending').innerHTML = pending + '<small>건</small>';
+  $('stToday').innerHTML = today + '<small>건</small>';
+  $('stSent').innerHTML = sent + '<small>건</small>';
+  $('stRevenue').textContent = won(revenue);
+  $('cAll').textContent = orders.length;
+  $('cPending').textContent = pending;
+  $('cSent').textContent = sent;
+  $('cCancelled').textContent = cancelled;
+
+  /* 타이틀 */
+  document.title = (pending > 0 ? '(' + pending + '건 대기) ' : '') + BASE_TITLE;
+
+  /* 갱신 시각 */
+  if(lastSyncAt){
+    lastSyncEl.textContent = '마지막 갱신 ' + pad(lastSyncAt.getHours()) + ':' + pad(lastSyncAt.getMinutes()) + ':' + pad(lastSyncAt.getSeconds());
+  }
+
+  /* 목록 */
+  var shown = orders.filter(function(o){ return filter === 'all' || o.status === filter; });
+  if(!shown.length){
+    olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' +
+      (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요') + '</div>';
+    return;
+  }
+  var html = shown.map(function(o){
+    var k = esc(String(o.id));
+    var st = STATUS_LABEL[o.status] ? o.status : 'pending';
+    var acts = '';
+    if(o.status === 'pending'){
+      acts = '<button type="button" class="abtn abtn--ok" data-act="sent" data-id="' + k + '">✓ 발송 완료</button>' +
+             '<button type="button" class="abtn abtn--cancel" data-act="cancelled" data-id="' + k + '">취소</button>';
+    } else {
+      acts = '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로 되돌리기</button>';
+    }
+    return '<div class="orow' + (newIds[String(o.id)] ? ' is-new' : '') + '" data-id="' + k + '">' +
+      '<div class="oc-time"><div class="rel">' + esc(relTime(o.created_at)) + '</div><div class="abs" title="' + esc(absTime(o.created_at)) + '">' + esc(absTime(o.created_at)) + '</div></div>' +
+      '<div class="oc-name" title="' + esc(o.name) + '">' + esc(o.name) + '</div>' +
+      '<div class="oc-dep"><span class="mini-lbl">입금자</span><span class="dep-val">' + esc(o.depositor || '—') + '</span></div>' +
+      '<div class="oc-email"><button type="button" class="email-btn" data-email="' + esc(o.email) + '" title="눌러서 복사"><span class="ev">' + esc(o.email) + '</span><span class="cp" aria-hidden="true">📋</span></button></div>' +
+      '<div class="oc-amount">' + won(o.amount) + '</div>' +
+      '<div class="o-meta"><span class="amt">' + won(o.amount) + '</span><span class="rel" title="' + esc(absTime(o.created_at)) + '">' + esc(relTime(o.created_at)) + '</span><span class="abs">' + esc(absTime(o.created_at)) + '</span></div>' +
+      '<div class="oc-status"><span class="badge badge--' + st + '">' + STATUS_LABEL[st] + '</span></div>' +
+      (o.memo ? '<div class="oc-memo">📝 ' + esc(o.memo) + '</div>' : '') +
+      '<div class="oc-act">' + acts + '</div>' +
+    '</div>';
+  }).join('');
+  olist.innerHTML = html;
+}
+
+/* ============ 필터 탭 ============ */
+tabs.addEventListener('click', function(e){
+  var btn = e.target.closest('.tab');
+  if(!btn) return;
+  filter = btn.getAttribute('data-filter');
+  Array.prototype.forEach.call(tabs.querySelectorAll('.tab'), function(t){
+    t.classList.toggle('on', t === btn);
+  });
+  render();
+});
+
+/* ============ 목록 액션 (위임) ============ */
+olist.addEventListener('click', function(e){
+  var emailBtn = e.target.closest('.email-btn');
+  if(emailBtn){ copyText(emailBtn.getAttribute('data-email')); return; }
+  var actBtn = e.target.closest('.abtn');
+  if(actBtn){ changeStatus(actBtn.getAttribute('data-id'), actBtn.getAttribute('data-act')); }
+});
+
+function copyText(text){
+  if(!text) return;
+  var done = function(){ toast('이메일이 복사됐어요 📋', 'ok'); };
+  var fail = function(){ toast('복사에 실패했어요', 'err'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ legacyCopy(text) ? done() : fail(); });
+  } else {
+    legacyCopy(text) ? done() : fail();
+  }
+}
+function legacyCopy(text){
+  try{
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
+}
+
+/* ============ 상태 변경 (낙관적 업데이트) ============ */
+function changeStatus(id, status){
+  var order = null;
+  for(var i = 0; i < orders.length; i++){
+    if(String(orders[i].id) === String(id)){ order = orders[i]; break; }
+  }
+  if(!order || order.status === status) return;
+  var prev = order.status;
+  order.status = status;   /* 낙관적 반영 */
+  render();
+
+  api('update_status', { id: order.id, status: status }).then(function(){
+    var msg = status === 'sent' ? '발송 완료로 변경했어요 ✓'
+            : status === 'cancelled' ? '주문을 취소 처리했어요'
+            : '입금확인 대기로 되돌렸어요';
+    toast(msg, status === 'sent' ? 'ok' : undefined);
+  }).catch(function(err){
+    order.status = prev;   /* 롤백 */
+    render();
+    if(err.net){ netBanner.hidden = false; toast('네트워크 오류 — 상태 변경이 취소됐어요', 'err'); }
+    else if(err.server){ toast('상태 변경에 실패했어요 — 원래대로 되돌렸어요', 'err'); }
+  });
+}
+
+/* ============ 계좌 설정 ============ */
+function loadBank(){
+  fetch(SUPABASE_URL + '/rest/v1/settings?key=eq.bank&select=value', {
+    headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY }
+  }).then(function(res){
+    if(!res.ok) throw new Error('http');
+    return res.json();
+  }).then(function(rows){
+    var v = (rows && rows[0] && rows[0].value) || {};
+    $('b-bank').value = v.bank || '';
+    $('b-account').value = v.account || '';
+    $('b-holder').value = v.holder || '';
+    updateBankWarn();
+  }).catch(function(){
+    toast('계좌 정보를 불러오지 못했어요', 'err');
+    updateBankWarn();
+  });
+}
+function updateBankWarn(){
+  var filled = $('b-bank').value.trim() && $('b-account').value.trim() && $('b-holder').value.trim();
+  bankWarn.hidden = !!filled;
+}
+bankForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  var bank = $('b-bank').value.trim();
+  var account = $('b-account').value.trim();
+  var holder = $('b-holder').value.trim();
+  if(!bank || !account || !holder){
+    toast('은행명·계좌번호·예금주를 모두 입력해주세요', 'err');
+    return;
+  }
+  bankBtn.disabled = true;
+  bankBtn.classList.add('is-loading');
+  bankLabel.textContent = '저장 중…';
+
+  api('set_bank', { bank: bank, account: account, holder: holder }).then(function(){
+    toast('계좌 정보가 저장됐어요 ✓', 'ok');
+    updateBankWarn();
+  }).catch(function(err){
+    if(err.net){ netBanner.hidden = false; toast('네트워크 오류 — 저장하지 못했어요', 'err'); }
+    else if(err.server){ toast('계좌 저장에 실패했어요', 'err'); }
+  }).finally(function(){
+    bankBtn.disabled = false;
+    bankBtn.classList.remove('is-loading');
+    bankLabel.textContent = '저장';
+  });
+});
+
+/* ============ 시작 ============ */
+if(getPw()){
+  enterDash();  /* 저장된 비번이 무효면 첫 API 401 → 자동 로그아웃 */
+} else {
+  setTimeout(function(){ pwInput.focus(); }, 50);
+}
+})();
+</script>
+</body>
+</html>
