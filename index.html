@@ -1352,20 +1352,6 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
       });
     });
 
-    // 판매자 이메일 알림 (실패해도 주문 접수에는 영향 없음)
-    fetch('https://formsubmit.co/ajax/mj12270411@gmail.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        _subject: '💰 입금 완료 신고! ' + depositor + ' (9,900원)',
-        _template: 'table',
-        _captcha: 'false',
-        '이름': name,
-        '입금자명': depositor,
-        '이메일(PDF 발송처)': email
-      })
-    }).catch(function(){});
-
     saveOrder
       .then(function(d){
         if(d && d.emailed === false){
