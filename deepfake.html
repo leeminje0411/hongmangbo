@@ -335,8 +335,24 @@ footer{padding:30px 0 60px;text-align:center}
       applyCfg();
       applyBank();
       startCountdown();
+      checkClosed();
     })
     .catch(function(){ startCountdown(); });
+
+  /* 마감/비활성 시 접수 차단 */
+  function checkClosed(){
+    var over = cfg.deadline && (Date.now() >= new Date(cfg.deadline).getTime());
+    if(cfg.active === false || over){
+      var f = $('poForm');
+      if(f){
+        f.innerHTML = '<div style="text-align:center;padding:26px 10px;color:var(--ink)">' +
+          '<p style="font-size:2rem;margin-bottom:10px">🙏</p>' +
+          '<p style="font-weight:900;font-size:1.15rem;margin-bottom:8px">사전예약이 마감되었습니다</p>' +
+          '<p style="font-size:.92rem;color:rgba(20,23,42,.65);line-height:1.7">목표 인원 미달로 이번 제작은 진행되지 않으며,<br>예약해주신 모든 분께 <strong>전액 환불</strong>을 메일로 안내드렸습니다.<br>메일함(스팸함 포함)을 확인해주세요.</p>' +
+          '</div>';
+      }
+    }
+  }
 
   function won(n){return Number(n).toLocaleString('ko-KR')+'원';}
   function applyCfg(){
