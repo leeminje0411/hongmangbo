@@ -843,7 +843,12 @@ function render(){
       '<div class="oc-amount">' + won(o.amount) + '</div>' +
       '<div class="o-meta"><span class="amt">' + won(o.amount) + '</span><span class="rel" title="' + esc(absTime(o.created_at)) + '">' + esc(relTime(o.created_at)) + '</span><span class="abs">' + esc(absTime(o.created_at)) + '</span></div>' +
       '<div class="oc-status"><span class="badge badge--' + st + '">' + STATUS_LABEL[st] + '</span></div>' +
-      (o.memo ? '<div class="oc-memo">📝 ' + esc(o.memo) + '</div>' : '') +
+      (function(){
+        var extra = [];
+        if(o.memo) extra.push('📝 ' + esc(o.memo));
+        if(o.download_count > 0) extra.push('⬇ 다운로드 ' + o.download_count + '회');
+        return extra.length ? '<div class="oc-memo">' + extra.join(' &nbsp;·&nbsp; ') + '</div>' : '';
+      })() +
       '<div class="oc-act">' + acts + '</div>' +
     '</div>';
   }).join('');
