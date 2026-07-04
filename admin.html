@@ -204,6 +204,7 @@ input{font-family:inherit}
 .tab .cnt{font-style:italic;font-weight:900;margin-left:3px}
 .tab:hover{border-color:var(--navy)}
 .tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dupb{display:inline-flex;align-items:center;margin-left:6px;background:#FFE3E8;color:var(--red);font-weight:900;font-size:.72rem;border-radius:999px;padding:2px 8px;flex:none;vertical-align:middle}
 
 /* ============ ANALYTICS ============ */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
@@ -540,6 +541,7 @@ input{font-family:inherit}
             <button type="button" class="tab" data-filter="pending">대기<span class="cnt" id="cPending">0</span></button>
             <button type="button" class="tab" data-filter="sent">발송완료<span class="cnt" id="cSent">0</span></button>
             <button type="button" class="tab" data-filter="cancelled">취소<span class="cnt" id="cCancelled">0</span></button>
+            <button type="button" class="tab" data-filter="dup">⚠️ 중복<span class="cnt" id="cDup">0</span></button>
           </div>
         </div>
         <div class="ohead" aria-hidden="true">
@@ -1064,6 +1066,12 @@ function render(){
   $('cSent').textContent = sent;
   $('cCancelled').textContent = cancelled;
 
+  /* 동일 이메일 중복 감지 */
+  var emailCnt = {};
+  orders.forEach(function(o){ emailCnt[o.email] = (emailCnt[o.email] || 0) + 1; });
+  var dupOrders = orders.filter(function(o){ return emailCnt[o.email] > 1; });
+  $('cDup').textContent = dupOrders.length;
+
   /* 타이틀 */
   document.title = (pending > 0 ? '(' + pending + '건 대기) ' : '') + BASE_TITLE;
 
@@ -1075,17 +1083,32 @@ function render(){
   /* 매출 분석 */
   renderAnalytics();
 
-  /* 목록 — 입금확인 대기가 항상 맨 위, 그 안에서는 최신순 */
-  var shown = orders.filter(function(o){ return filter === 'all' || o.status === filter; });
-  shown.sort(function(a, b){
-    var ap = a.status === 'pending' ? 0 : 1;
-    var bp = b.status === 'pending' ? 0 : 1;
-    if(ap !== bp) return ap - bp;
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+  /* 목록 — 입금확인 대기가 항상 맨 위, 그 안에서는 최신순. 중복 탭은 이메일별 묶음 */
+  var shown;
+  if(filter === 'dup'){
+    shown = dupOrders.slice();
+    var latest = {};
+    shown.forEach(function(o){
+      var t = new Date(o.created_at).getTime();
+      if(!latest[o.email] || t > latest[o.email]) latest[o.email] = t;
+    });
+    shown.sort(function(a, b){
+      if(latest[a.email] !== latest[b.email]) return latest[b.email] - latest[a.email];
+      if(a.email !== b.email) return a.email < b.email ? -1 : 1;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  } else {
+    shown = orders.filter(function(o){ return filter === 'all' || o.status === filter; });
+    shown.sort(function(a, b){
+      var ap = a.status === 'pending' ? 0 : 1;
+      var bp = b.status === 'pending' ? 0 : 1;
+      if(ap !== bp) return ap - bp;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }
   if(!shown.length){
-    olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' +
-      (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요') + '</div>';
+    olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">' + (filter === 'dup' ? '👍' : '📭') + '</span>' +
+      (filter === 'dup' ? '동일 이메일 중복 주문이 없어요' : (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요')) + '</div>';
     pagerEl.hidden = true;
     return;
   }
@@ -1116,7 +1139,8 @@ function render(){
       '<div class="oc-time"><div class="rel">' + esc(relTime(o.created_at)) + '</div><div class="abs" title="' + esc(absTime(o.created_at)) + '">' + esc(absTime(o.created_at)) + '</div></div>' +
       '<div class="oc-name" title="' + esc(o.name) + '">' + esc(o.name) + '</div>' +
       '<div class="oc-dep"><span class="mini-lbl">입금자</span><span class="dep-val">' + esc(o.depositor || '—') + '</span></div>' +
-      '<div class="oc-email"><button type="button" class="email-btn" data-email="' + esc(o.email) + '" title="눌러서 복사"><span class="ev">' + esc(o.email) + '</span><span class="cp" aria-hidden="true">📋</span></button></div>' +
+      '<div class="oc-email"><button type="button" class="email-btn" data-email="' + esc(o.email) + '" title="눌러서 복사"><span class="ev">' + esc(o.email) + '</span><span class="cp" aria-hidden="true">📋</span></button>' +
+        (emailCnt[o.email] > 1 ? '<span class="dupb" title="같은 이메일로 총 ' + emailCnt[o.email] + '건 주문됨">×' + emailCnt[o.email] + '</span>' : '') + '</div>' +
       '<div class="oc-amount">' + won(o.amount) + '</div>' +
       '<div class="o-meta"><span class="amt">' + won(o.amount) + '</span><span class="rel" title="' + esc(absTime(o.created_at)) + '">' + esc(relTime(o.created_at)) + '</span><span class="abs">' + esc(absTime(o.created_at)) + '</span></div>' +
       '<div class="oc-status"><span class="badge badge--' + st + '">' + STATUS_LABEL[st] + '</span></div>' +
