@@ -1344,7 +1344,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
     label.textContent = '접수 중…';
 
     var name = document.getElementById('f-name').value.trim();
-    var email = document.getElementById('f-email').value.trim();
+    var email = document.getElementById('f-email').value.trim().replace(/\.(con|cim|comm|vom|c0m)$/i, '.com');
     var depositor = document.getElementById('f-depositor').value.trim();
 
     // 주문 접수 + PDF 자동 발송 (서버가 이메일까지 처리)
