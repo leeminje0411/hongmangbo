@@ -407,6 +407,52 @@ input{font-family:inherit}
   .shake,.orow.is-new,.toast{animation:none}
   .btn,.abtn{transition:none}
 }
+
+/* ============ VIEW SWITCHER (두 겹) ============ */
+.view-tabs{display:flex;gap:8px;margin-bottom:18px}
+.vtab{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:.92rem;font-weight:900;letter-spacing:-0.02em;
+  padding:14px 10px;border-radius:14px;
+  border:2px solid var(--navy);background:#fff;color:rgba(20,23,42,.55);
+  box-shadow:3px 3px 0 rgba(11,15,31,.12);transition:background .15s,color .15s,box-shadow .15s;
+}
+.vtab.on{background:var(--navy);color:#fff;box-shadow:3px 3px 0 var(--red)}
+.vtab .vb{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;
+  font-size:.72rem;font-weight:900;font-style:italic;border-radius:999px;background:var(--red);color:#fff}
+.vtab:not(.on) .vb{background:rgba(230,0,45,.12);color:var(--red)}
+
+/* ============ DEEPFAKE 목표 히어로 ============ */
+.pv-hero{
+  background:var(--navy);color:#fff;border-radius:20px;padding:22px;margin-bottom:16px;
+  box-shadow:6px 6px 0 var(--red);position:relative;overflow:hidden;
+}
+.pv-hero .pvh-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.pv-hero .pvh-cur{font-size:2.4rem;font-weight:900;font-style:italic;line-height:1;color:var(--yellow)}
+.pv-hero .pvh-cur small{font-size:.5em;color:rgba(255,255,255,.6);font-style:normal;margin-left:3px}
+.pv-hero .pvh-goal{font-size:.9rem;font-weight:800;color:rgba(255,255,255,.6)}
+.pv-hero .pvh-dead{font-size:.82rem;font-weight:700;color:#ff9db0}
+.pv-bar{height:14px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden;margin:14px 0 10px}
+.pv-bar-fill{height:100%;background:linear-gradient(90deg,var(--yellow),#ffb800);border-radius:999px;width:0;transition:width .6s}
+.pv-status{font-size:.9rem;font-weight:800}
+.pv-status.met{color:var(--green)}
+.pv-status.unmet{color:#ff9db0}
+.pv-refund{
+  display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  font-size:.82rem;font-weight:800;color:#fff;background:var(--red);
+  border:none;border-radius:999px;padding:9px 16px;transition:background .15s;
+}
+.pv-refund:hover{background:var(--red-deep)}
+.pv-refund[disabled]{opacity:.4;cursor:not-allowed}
+
+/* 사전예약 상태 배지 */
+.badge--paid{background:#E4F5EA;color:#116B36;border:1.5px solid rgba(27,158,75,.5)}
+.badge--refunded{background:#EEF2FF;color:#3B4CCA;border:1.5px solid rgba(59,76,202,.4)}
+.abtn--paid{background:var(--green);color:#fff}
+.abtn--paid:hover{background:#158540}
+.abtn--refund{background:#fff;color:#3B4CCA;border:1.5px solid rgba(59,76,202,.45)}
+.abtn--refund:hover{background:#EEF2FF}
+.deep-hint{background:#EEF6FF;border:1.5px solid rgba(37,99,235,.25);color:#1e40af}
 </style>
 </head>
 <body>
@@ -455,6 +501,14 @@ input{font-family:inherit}
         <span>계좌를 설정해야 랜딩페이지에서 결제가 가능합니다. 아래 <b>입금 계좌 설정</b>에서 저장해주세요.</span>
       </div>
 
+      <!-- 두 겹 전환 -->
+      <div class="view-tabs">
+        <button type="button" class="vtab on" data-view="hong">🎬 홍맹보 주문 <span class="vb" id="vbHong">0</span></button>
+        <button type="button" class="vtab" data-view="deep">🎭 딥페이크 사전예약 <span class="vb" id="vbDeep">0</span></button>
+      </div>
+
+      <!-- ============ VIEW: 홍맹보 ============ -->
+      <div id="viewHong">
       <p class="flow-hint">💡 <b>입금자명</b>이 은행 앱 입금 내역과 일치하는지 확인 <span class="arr">→</span> PDF를 이메일로 발송 <span class="arr">→</span> <b>[✓ 발송 완료]</b> 클릭</p>
 
       <!-- 스탯 -->
@@ -529,6 +583,53 @@ input{font-family:inherit}
           <span class="lg--today">▮ 오늘</span>
         </p>
       </section>
+      </div><!-- /viewHong -->
+
+      <!-- ============ VIEW: 딥페이크 사전예약 ============ -->
+      <div id="viewDeep" hidden>
+        <div class="pv-hero">
+          <div class="pvh-top">
+            <div class="pvh-cur"><span id="pvCur">0</span><small>명 예약</small></div>
+            <div style="text-align:right">
+              <div class="pvh-goal">목표 <b id="pvGoal">50</b>명</div>
+              <div class="pvh-dead" id="pvDead">마감까지 —</div>
+            </div>
+          </div>
+          <div class="pv-bar"><div class="pv-bar-fill" id="pvBar"></div></div>
+          <p class="pv-status unmet" id="pvStatus">목표까지 50명 남음</p>
+          <button type="button" class="pv-refund" id="pvRefundAll">💸 목표 미달 — 대기·입금확인 전원 환불 표시</button>
+        </div>
+
+        <div class="banner deep-hint">
+          <span aria-hidden="true">🎭</span>
+          <span>사전예약은 <b>자동발송 없음</b> — 입금 확인되면 <b>[✓ 입금확인]</b>, 내일 저녁 7시 제작 완료 시 발송하세요. 50명 미달 시 <b>[전원 환불]</b> 후 은행앱에서 실제 환불.</span>
+        </div>
+
+        <div class="stats" style="grid-template-columns:1fr 1fr">
+          <div class="stat stat--hot"><p class="lbl">입금확인 대기</p><p class="num" id="pvPending">0<small>건</small></p></div>
+          <div class="stat"><p class="lbl">입금확인 완료</p><p class="num" id="pvPaid">0<small>건</small></p></div>
+          <div class="stat"><p class="lbl">발송완료</p><p class="num" id="pvSent">0<small>건</small></p></div>
+          <div class="stat stat--money"><p class="lbl">예약 매출 (입금확인+발송)</p><p class="num" id="pvRev">0원</p></div>
+        </div>
+
+        <section class="card">
+          <div class="card-head">
+            <h2 class="dash-h2">사전예약 목록</h2>
+            <div class="tabs" id="pvTabs">
+              <button type="button" class="tab on" data-pfilter="active">진행중<span class="cnt" id="pcActive">0</span></button>
+              <button type="button" class="tab" data-pfilter="pending">대기<span class="cnt" id="pcPending">0</span></button>
+              <button type="button" class="tab" data-pfilter="paid">입금확인<span class="cnt" id="pcPaid">0</span></button>
+              <button type="button" class="tab" data-pfilter="refunded">환불<span class="cnt" id="pcRefunded">0</span></button>
+            </div>
+          </div>
+          <div class="ohead" aria-hidden="true">
+            <span>예약시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
+          </div>
+          <div class="olist" id="pvList">
+            <div class="olist-empty"><span class="big" aria-hidden="true">⏳</span>사전예약을 불러오는 중…</div>
+          </div>
+        </section>
+      </div><!-- /viewDeep -->
 
       <!-- 계좌 설정 -->
       <section class="card">
@@ -723,9 +824,11 @@ function enterDash(){
   loginView.hidden = true;
   dashView.hidden = false;
   loadOrders(true);
+  loadPreorders(false);
+  loadDeepCfg();
   loadBank();
   if(refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(function(){ loadOrders(false); }, REFRESH_MS);
+  refreshTimer = setInterval(function(){ loadOrders(false); loadPreorders(false); }, REFRESH_MS);
 }
 
 /* ============ 주문 로드 ============ */
@@ -762,7 +865,180 @@ function loadOrders(showSpin){
     refreshBtn.classList.remove('is-loading');
   });
 }
-refreshBtn.addEventListener('click', function(){ loadOrders(true); });
+refreshBtn.addEventListener('click', function(){ loadOrders(true); loadPreorders(true); });
+
+/* ============ 두 겹 뷰 전환 ============ */
+var curView = 'hong';
+Array.prototype.forEach.call(document.querySelectorAll('.vtab'), function(vt){
+  vt.addEventListener('click', function(){
+    curView = vt.getAttribute('data-view');
+    Array.prototype.forEach.call(document.querySelectorAll('.vtab'), function(t){ t.classList.toggle('on', t === vt); });
+    $('viewHong').hidden = (curView !== 'hong');
+    $('viewDeep').hidden = (curView !== 'deep');
+    if(curView === 'deep') loadPreorders(true);
+  });
+});
+
+/* ============ 딥페이크 설정/사전예약 ============ */
+var preorders = [];
+var pfilter = 'active';
+var deepCfg = { goal: 50, deadline: null };
+
+function loadDeepCfg(){
+  fetch(SUPABASE_URL + '/rest/v1/settings?key=eq.deepfake&select=value', { headers: { 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.json(); })
+    .then(function(rows){ if(rows && rows[0]) deepCfg = Object.assign(deepCfg, rows[0].value || {}); renderPreorders(); })
+    .catch(function(){});
+}
+
+function loadPreorders(showSpin){
+  if(showSpin) refreshBtn.classList.add('is-loading');
+  return api('list_preorders').then(function(data){
+    netBanner.hidden = true;
+    preorders = data.preorders || [];
+    renderPreorders();
+  }).catch(function(err){
+    if(err.net){ netBanner.hidden = false; }
+    else if(err.server){ toast('사전예약을 불러오지 못했어요', 'err'); }
+  }).finally(function(){
+    refreshBtn.classList.remove('is-loading');
+  });
+}
+
+var PSTATUS_LABEL = { pending:'입금확인 대기', paid:'입금확인 완료', sent:'발송완료', refunded:'환불', cancelled:'취소' };
+var PSTATUS_CLASS = { pending:'pending', paid:'paid', sent:'sent', refunded:'refunded', cancelled:'cancelled' };
+
+function renderPreorders(){
+  var pending=0, paid=0, sent=0, refunded=0, cancelled=0, rev=0;
+  preorders.forEach(function(o){
+    if(o.status==='pending') pending++;
+    else if(o.status==='paid'){ paid++; rev += Number(o.amount)||0; }
+    else if(o.status==='sent'){ sent++; rev += Number(o.amount)||0; }
+    else if(o.status==='refunded') refunded++;
+    else if(o.status==='cancelled') cancelled++;
+  });
+  var validCount = pending + paid + sent; /* 목표 카운트 */
+
+  /* 상단 탭 배지 */
+  $('vbDeep').textContent = validCount;
+  $('vbHong').textContent = orders.length;
+
+  /* 목표 히어로 */
+  $('pvCur').textContent = validCount;
+  $('pvGoal').textContent = deepCfg.goal;
+  var pct = Math.min(100, Math.round(validCount / (deepCfg.goal||50) * 100));
+  $('pvBar').style.width = pct + '%';
+  var met = validCount >= (deepCfg.goal||50);
+  var st = $('pvStatus');
+  if(met){ st.className = 'pv-status met'; st.textContent = '🎉 목표 달성! 제작 진행 — 내일 저녁 7시 발송'; }
+  else { st.className = 'pv-status unmet'; st.textContent = '목표까지 ' + ((deepCfg.goal||50) - validCount) + '명 남음'; }
+  $('pvRefundAll').disabled = (pending + paid === 0);
+
+  /* 마감 카운트다운 */
+  if(deepCfg.deadline){
+    var diff = new Date(deepCfg.deadline).getTime() - Date.now();
+    if(diff > 0){
+      var h = Math.floor(diff/3600000), m = Math.floor(diff%3600000/60000);
+      $('pvDead').textContent = '마감까지 ' + h + '시간 ' + m + '분';
+    } else { $('pvDead').textContent = '⏰ 마감됨'; }
+  }
+
+  /* 스탯 */
+  $('pvPending').innerHTML = pending + '<small>건</small>';
+  $('pvPaid').innerHTML = paid + '<small>건</small>';
+  $('pvSent').innerHTML = sent + '<small>건</small>';
+  $('pvRev').textContent = won(rev);
+  $('pcActive').textContent = validCount;
+  $('pcPending').textContent = pending;
+  $('pcPaid').textContent = paid;
+  $('pcRefunded').textContent = refunded;
+
+  /* 목록 */
+  var shown = preorders.filter(function(o){
+    if(pfilter==='active') return o.status==='pending' || o.status==='paid' || o.status==='sent';
+    return o.status === pfilter;
+  });
+  shown.sort(function(a,b){
+    var ap = a.status==='pending'?0:1, bp = b.status==='pending'?0:1;
+    if(ap!==bp) return ap-bp;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+  var list = $('pvList');
+  if(!shown.length){
+    list.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' + (preorders.length ? '해당 상태의 예약이 없어요' : '아직 사전예약이 없어요') + '</div>';
+    return;
+  }
+  list.innerHTML = shown.map(function(o){
+    var k = esc(String(o.id));
+    var st = PSTATUS_CLASS[o.status] || 'pending';
+    var acts = '';
+    if(o.status==='pending'){
+      acts = '<button type="button" class="abtn abtn--paid" data-pact="paid" data-pid="'+k+'">✓ 입금확인</button>' +
+             '<button type="button" class="abtn abtn--cancel" data-pact="cancelled" data-pid="'+k+'">취소</button>';
+    } else if(o.status==='paid'){
+      acts = '<button type="button" class="abtn abtn--refund" data-pact="refunded" data-pid="'+k+'">환불 표시</button>' +
+             '<button type="button" class="abtn abtn--revert" data-pact="pending" data-pid="'+k+'">대기로</button>';
+    } else if(o.status==='sent'){
+      acts = '<button type="button" class="abtn abtn--revert" data-pact="paid" data-pid="'+k+'">입금확인으로</button>';
+    } else {
+      acts = '<button type="button" class="abtn abtn--revert" data-pact="pending" data-pid="'+k+'">대기로 되돌리기</button>';
+    }
+    return '<div class="orow" data-pid="'+k+'">' +
+      '<div class="oc-time"><div class="rel">'+esc(relTime(o.created_at))+'</div><div class="abs">'+esc(absTime(o.created_at))+'</div></div>' +
+      '<div class="oc-name" title="'+esc(o.name)+'">'+esc(o.name)+'</div>' +
+      '<div class="oc-dep"><span class="mini-lbl">입금자</span><span class="dep-val">'+esc(o.depositor||'—')+'</span></div>' +
+      '<div class="oc-email"><button type="button" class="email-btn" data-email="'+esc(o.email)+'" title="눌러서 복사"><span class="ev">'+esc(o.email)+'</span><span class="cp" aria-hidden="true">📋</span></button></div>' +
+      '<div class="oc-amount">'+won(o.amount)+'</div>' +
+      '<div class="o-meta"><span class="amt">'+won(o.amount)+'</span><span class="rel">'+esc(relTime(o.created_at))+'</span><span class="abs">'+esc(absTime(o.created_at))+'</span></div>' +
+      '<div class="oc-status"><span class="badge badge--'+st+'">'+PSTATUS_LABEL[o.status]+'</span></div>' +
+      (o.memo ? '<div class="oc-memo">📝 '+esc(o.memo)+'</div>' : '') +
+      '<div class="oc-act">'+acts+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+/* 사전예약 필터 탭 */
+$('pvTabs').addEventListener('click', function(e){
+  var btn = e.target.closest('.tab'); if(!btn) return;
+  pfilter = btn.getAttribute('data-pfilter');
+  Array.prototype.forEach.call($('pvTabs').querySelectorAll('.tab'), function(t){ t.classList.toggle('on', t===btn); });
+  renderPreorders();
+});
+
+/* 사전예약 액션 (위임) */
+$('pvList').addEventListener('click', function(e){
+  var emailBtn = e.target.closest('.email-btn');
+  if(emailBtn){ copyText(emailBtn.getAttribute('data-email')); return; }
+  var actBtn = e.target.closest('.abtn');
+  if(actBtn){ changePreorder(actBtn.getAttribute('data-pid'), actBtn.getAttribute('data-pact')); }
+});
+
+function changePreorder(id, status){
+  var o = null;
+  for(var i=0;i<preorders.length;i++){ if(String(preorders[i].id)===String(id)){ o=preorders[i]; break; } }
+  if(!o || o.status===status) return;
+  var prev = o.status;
+  o.status = status; renderPreorders();
+  api('update_preorder', { id: o.id, status: status }).then(function(){
+    var msg = status==='paid' ? '입금 확인 처리했어요 ✓' : status==='refunded' ? '환불로 표시했어요 (은행앱에서 실제 환불하세요)' : status==='cancelled' ? '취소 처리했어요' : '상태를 변경했어요';
+    toast(msg, status==='paid'?'ok':undefined);
+  }).catch(function(err){
+    o.status = prev; renderPreorders();
+    if(err.net){ netBanner.hidden=false; toast('네트워크 오류 — 변경 취소', 'err'); }
+    else toast('변경 실패 — 되돌렸어요', 'err');
+  });
+}
+
+/* 전원 환불 표시 */
+$('pvRefundAll').addEventListener('click', function(){
+  var n = preorders.filter(function(o){ return o.status==='pending'||o.status==='paid'; }).length;
+  if(!n) return;
+  if(!confirm('대기·입금확인 상태 ' + n + '건을 전원 "환불"로 표시합니다.\n(실제 환불 송금은 은행앱에서 직접 하셔야 합니다)\n\n진행할까요?')) return;
+  api('refund_all_unmet', {}).then(function(res){
+    toast((res.refunded||0) + '건을 환불로 표시했어요 — 은행앱에서 실제 환불 진행하세요', 'ok');
+    loadPreorders(true);
+  }).catch(function(){ toast('처리 실패', 'err'); });
+});
 document.addEventListener('visibilitychange', function(){
   if(!document.hidden && !dashView.hidden){ loadOrders(false); }
 });
