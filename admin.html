@@ -205,6 +205,13 @@ input{font-family:inherit}
 .tab:hover{border-color:var(--navy)}
 .tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .dupb{display:inline-flex;align-items:center;margin-left:6px;background:#FFE3E8;color:var(--red);font-weight:900;font-size:.72rem;border-radius:999px;padding:2px 8px;flex:none;vertical-align:middle}
+.searchbar{position:relative;margin:14px 0 4px}
+.searchbar .sic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.5;pointer-events:none}
+.searchbar input{width:100%;border:2px solid var(--navy);border-radius:12px;padding:11px 42px 11px 40px;font-size:.95rem;font-weight:700;background:#fff;font-family:inherit;color:var(--navy)}
+.searchbar input:focus{outline:none;box-shadow:3px 3px 0 var(--navy)}
+.searchbar input::placeholder{color:rgba(20,23,42,.35);font-weight:600}
+.qclear{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:#ECECEF;color:var(--navy);border-radius:50%;width:26px;height:26px;font-weight:900;cursor:pointer;line-height:1}
+.qclear:hover{background:var(--red);color:#fff}
 
 /* ============ ANALYTICS ============ */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
@@ -544,6 +551,11 @@ input{font-family:inherit}
             <button type="button" class="tab" data-filter="dup">⚠️ 중복<span class="cnt" id="cDup">0</span></button>
           </div>
         </div>
+        <div class="searchbar">
+          <span class="sic" aria-hidden="true">🔍</span>
+          <input type="search" id="q" placeholder="이름 · 입금자명 · 이메일로 검색" autocomplete="off">
+          <button type="button" id="qClear" class="qclear" hidden aria-label="검색 지우기">✕</button>
+        </div>
         <div class="ohead" aria-hidden="true">
           <span>주문시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
         </div>
@@ -624,6 +636,11 @@ input{font-family:inherit}
               <button type="button" class="tab" data-pfilter="refunded">환불<span class="cnt" id="pcRefunded">0</span></button>
             </div>
           </div>
+          <div class="searchbar">
+            <span class="sic" aria-hidden="true">🔍</span>
+            <input type="search" id="pq" placeholder="이름 · 입금자명 · 이메일로 검색" autocomplete="off">
+            <button type="button" id="pqClear" class="qclear" hidden aria-label="검색 지우기">✕</button>
+          </div>
           <div class="ohead" aria-hidden="true">
             <span>예약시각</span><span>이름</span><span>입금자명</span><span>이메일</span><span>금액</span><span>상태</span><span>액션</span>
           </div>
@@ -680,6 +697,7 @@ var orders = [];
 var seenIds = null;        // 최초 로드 전 null
 var newIds = {};           // 하이라이트 대상
 var filter = 'all';
+var q = '';
 var page = 1;
 var PAGE_SIZE = 10;
 var refreshTimer = null;
@@ -884,6 +902,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.vtab'), function(vt){
 /* ============ 딥페이크 설정/사전예약 ============ */
 var preorders = [];
 var pfilter = 'active';
+var pq = '';
 var deepCfg = { goal: 50, deadline: null };
 
 function loadDeepCfg(){
@@ -955,8 +974,9 @@ function renderPreorders(){
   $('pcPaid').textContent = paid;
   $('pcRefunded').textContent = refunded;
 
-  /* 목록 */
+  /* 목록 — 검색 중엔 전체에서 찾음 */
   var shown = preorders.filter(function(o){
+    if(pq) return ((o.name || '') + ' ' + (o.depositor || '') + ' ' + (o.email || '')).toLowerCase().indexOf(pq) !== -1;
     if(pfilter==='active') return o.status==='pending' || o.status==='paid' || o.status==='sent';
     return o.status === pfilter;
   });
@@ -967,7 +987,8 @@ function renderPreorders(){
   });
   var list = $('pvList');
   if(!shown.length){
-    list.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">📭</span>' + (preorders.length ? '해당 상태의 예약이 없어요' : '아직 사전예약이 없어요') + '</div>';
+    list.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">' + (pq ? '🔍' : '📭') + '</span>' +
+      (pq ? '"' + esc(pq) + '" 검색 결과가 없어요' : (preorders.length ? '해당 상태의 예약이 없어요' : '아직 사전예약이 없어요')) + '</div>';
     return;
   }
   list.innerHTML = shown.map(function(o){
@@ -1083,9 +1104,14 @@ function render(){
   /* 매출 분석 */
   renderAnalytics();
 
-  /* 목록 — 입금확인 대기가 항상 맨 위, 그 안에서는 최신순. 중복 탭은 이메일별 묶음 */
+  /* 목록 — 입금확인 대기가 항상 맨 위, 그 안에서는 최신순. 중복 탭은 이메일별 묶음. 검색 중엔 전체에서 찾음 */
   var shown;
-  if(filter === 'dup'){
+  if(q){
+    shown = orders.filter(function(o){
+      return ((o.name || '') + ' ' + (o.depositor || '') + ' ' + (o.email || '')).toLowerCase().indexOf(q) !== -1;
+    });
+    shown.sort(function(a, b){ return new Date(b.created_at) - new Date(a.created_at); });
+  } else if(filter === 'dup'){
     shown = dupOrders.slice();
     var latest = {};
     shown.forEach(function(o){
@@ -1107,8 +1133,8 @@ function render(){
     });
   }
   if(!shown.length){
-    olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">' + (filter === 'dup' ? '👍' : '📭') + '</span>' +
-      (filter === 'dup' ? '동일 이메일 중복 주문이 없어요' : (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요')) + '</div>';
+    olist.innerHTML = '<div class="olist-empty"><span class="big" aria-hidden="true">' + (q ? '🔍' : (filter === 'dup' ? '👍' : '📭')) + '</span>' +
+      (q ? '"' + esc(q) + '" 검색 결과가 없어요' : (filter === 'dup' ? '동일 이메일 중복 주문이 없어요' : (orders.length ? '해당 상태의 주문이 없어요' : '아직 주문이 없어요'))) + '</div>';
     pagerEl.hidden = true;
     return;
   }
@@ -1384,6 +1410,25 @@ tabs.addEventListener('click', function(e){
     t.classList.toggle('on', t === btn);
   });
   render();
+});
+
+/* ============ 검색 (이름·입금자명·이메일) ============ */
+$('q').addEventListener('input', function(){
+  q = this.value.trim().toLowerCase();
+  $('qClear').hidden = !q;
+  page = 1;
+  render();
+});
+$('qClear').addEventListener('click', function(){
+  $('q').value = ''; q = ''; this.hidden = true; page = 1; render(); $('q').focus();
+});
+$('pq').addEventListener('input', function(){
+  pq = this.value.trim().toLowerCase();
+  $('pqClear').hidden = !pq;
+  renderPreorders();
+});
+$('pqClear').addEventListener('click', function(){
+  $('pq').value = ''; pq = ''; this.hidden = true; renderPreorders(); $('pq').focus();
 });
 
 /* ============ 목록 액션 (위임) ============ */
