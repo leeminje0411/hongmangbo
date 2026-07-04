@@ -831,7 +831,8 @@ function render(){
              '<button type="button" class="abtn abtn--cancel" data-act="cancelled" data-id="' + k + '">취소</button>';
     } else if(o.status === 'sent'){
       acts = '<button type="button" class="abtn abtn--revert" data-resend="' + k + '">✉ 재발송</button>' +
-             '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로</button>';
+             '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로</button>' +
+             '<button type="button" class="abtn abtn--cancel" data-act="cancelled" data-id="' + k + '">취소</button>';
     } else {
       acts = '<button type="button" class="abtn abtn--revert" data-act="pending" data-id="' + k + '">대기로 되돌리기</button>';
     }
