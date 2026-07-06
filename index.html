@@ -225,7 +225,7 @@ h2{
 .proof-videos-head h3{font-size:clamp(1.3rem,4.5vw,1.8rem);font-weight:900;letter-spacing:-.03em}
 .proof-videos-head p{font-size:.9rem;color:rgba(255,255,255,.55);margin-top:6px}
 .proof-videos{display:grid;gap:18px}
-@media(min-width:700px){.proof-videos{grid-template-columns:repeat(4,1fr);gap:16px}}
+@media(min-width:700px){.proof-videos{grid-template-columns:repeat(4,1fr);gap:16px}.proof-videos .phone--wide{grid-column:span 2}}
 @media(max-width:699px){
   .proof-videos{
     display:flex;gap:14px;overflow-x:auto;
@@ -235,9 +235,11 @@ h2{
   }
   .proof-videos::-webkit-scrollbar{display:none}
   .proof-videos .phone{flex:0 0 62%;scroll-snap-align:center}
+  .proof-videos .phone--wide{flex:0 0 86%}
 }
 .phone{background:#000;border-radius:30px;padding:9px;border:2px solid rgba(255,255,255,.16);box-shadow:0 30px 60px -24px rgba(0,0,0,.8)}
 .phone video{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:22px;display:block;background:#111}
+.phone--wide video{aspect-ratio:960/474}
 
 /* ============ FORMULA ============ */
 .formula{background:var(--yellow);color:var(--navy);padding:clamp(52px,9vw,84px) 0;text-align:center}
@@ -780,6 +782,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
       <div class="phone reveal" style="--d:.15s"><video src="assets/video-6.mp4" poster="assets/video-6-poster.jpg" muted loop playsinline preload="none" aria-label="AI로 제작한 패러디 쇼츠 예시 4"></video></div>
       <div class="phone reveal" style="--d:.2s"><video src="assets/video-7.mp4" poster="assets/video-7-poster.jpg" muted loop playsinline preload="none" aria-label="AI로 제작한 패러디 쇼츠 예시 5"></video></div>
       <div class="phone reveal" style="--d:.25s"><video src="assets/video-8.mp4" poster="assets/video-8-poster.jpg" muted loop playsinline preload="none" aria-label="AI로 제작한 패러디 쇼츠 예시 6"></video></div>
+      <div class="phone phone--wide reveal" style="--d:.3s"><video src="assets/hero-messi-musk.mp4" poster="assets/hero-messi-musk.jpg" muted loop playsinline preload="none" aria-label="AI로 제작한 패러디 쇼츠 예시 7 — 메시와 머스크 대담"></video></div>
     </div>
   </div>
 </section>
