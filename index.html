@@ -690,7 +690,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
   </div>
 </div>
 
-<!-- ================= 딥페이크 티저 ================= -->
+<!-- ================= 딥페이크 티저 (숨김 · 캠페인 종료 — 복구하려면 아래 블록 주석만 해제) ================= -->
+<!-- DEEPFAKE-TEASER-HIDDEN
 <section style="background:#07080D;padding:clamp(56px,10vw,88px) 0">
   <div class="container">
     <div class="reveal" style="max-width:720px;margin:0 auto;background:linear-gradient(160deg,#12141c,#0a0b11);border:1.5px solid rgba(200,255,61,.25);border-radius:24px;padding:clamp(26px,5vw,40px);text-align:center;position:relative;overflow:hidden">
@@ -746,6 +747,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
     </div>
   </div>
 </section>
+-->
+<!-- /DEEPFAKE-TEASER-HIDDEN -->
 
 <!-- ================= PROOF ================= -->
 <section class="proof" id="proof">
@@ -936,7 +939,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
         <li><span class="ic">✓</span><div>인물 고정 프롬프트 노하우<small>이미지 태그 활용법 포함</small></div></li>
         <li><span class="ic">✓</span><div>입금 완료 즉시 자동 발송<small>새벽에 사도 1분 안에 도착</small></div></li>
         <li><span class="ic">✓</span><div>1:1 이메일 문의 지원<small>막히면 물어보세요, 첫 영상 나올 때까지</small></div></li>
+        <!-- 딥페이크 사전예약 항목 (숨김 · 캠페인 종료)
         <li><span class="ic">🎭</span><div>딥페이크 제작법 사전예약 자격<small>전자책 마지막 페이지에서 별도 신청 (선택 사항, 9,900원)</small></div></li>
+        -->
       </ul>
 
       <div class="honest">
@@ -983,7 +988,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
               <li>인물 고정 프롬프트 공식 + 1:1 이메일 지원</li>
             </ul>
             <p class="order-warn">⚠️ 완성된 영상을 보내드리는 게 아니라, <strong>직접 만드는 법을 알려주는 전자책</strong>입니다. AI 사이트 구독료는 별도예요.</p>
+            <!-- 딥페이크 미포함 안내 (숨김 · 캠페인 종료)
             <p class="order-warn" style="background:#EEF0F7;color:#2A2F45">🎭 <strong>딥페이크 제작법은 이 상품에 포함되어 있지 않습니다.</strong> 발송되는 전자책 <strong>마지막 페이지</strong>에서 별도 사전예약(9,900원)으로 신청하실 수 있어요.</p>
+            -->
           </div>
         </div>
 
@@ -1040,7 +1047,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
         <div class="form-success" id="formSuccess" role="status" aria-live="polite">
           <div class="big-check" aria-hidden="true">✓</div>
           <h3>발송 완료! 메일함을 확인하세요</h3>
-          <p id="successMsg">적어주신 이메일로 PDF를 보냈어요 — 보통 1분 이내 도착!<br><strong>안 보이면 스팸함(프로모션함)을 꼭 확인해주세요 📩</strong><br><span style="display:inline-block;margin-top:10px">🎭 딥페이크 제작법 사전예약은 <strong>받으신 PDF 마지막 페이지</strong>에 있어요</span></p>
+          <p id="successMsg">적어주신 이메일로 PDF를 보냈어요 — 보통 1분 이내 도착!<br><strong>안 보이면 스팸함(프로모션함)을 꼭 확인해주세요 📩</strong></p>
         </div>
       </div>
     </div>
@@ -1223,7 +1230,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
     }
   });
 
-  /* ---------- 딥페이크 사전예약 마감 안내 (실시간 설정 반영) ---------- */
+  /* ---------- 딥페이크 사전예약 마감 안내 (비활성 · 캠페인 종료로 티저 숨김) ----------
   fetch(SB_URL + '/rest/v1/settings?key=eq.deepfake&select=value', { headers: SB_HEADERS })
     .then(function(r){ return r.json(); })
     .then(function(rows){
@@ -1247,6 +1254,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
         }
       }
     }).catch(function(){});
+  ---------- */
 
   /* ---------- 쇼츠 영상: 화면에 보일 때만 재생 ---------- */
   var vids = document.querySelectorAll('.proof-videos video');
