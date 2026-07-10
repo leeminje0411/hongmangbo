@@ -5,3 +5,7 @@
 !assets/*.mp4
 kling_*.png
 Screenshot*.png
+# 프롬프트 스크린샷·영상 원본 (클링 UI 노출 방지)
+김정은_전참시_영상_프롬프트_예시/
+*.MOV
+*.mov
