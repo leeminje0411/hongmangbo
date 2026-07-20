@@ -517,7 +517,7 @@ input{font-family:inherit}
 
       <!-- ============ VIEW: 홍맹보 ============ -->
       <div id="viewHong">
-      <p class="flow-hint">💡 <b>입금자명</b>이 은행 앱 입금 내역과 일치하는지 확인 <span class="arr">→</span> PDF를 이메일로 발송 <span class="arr">→</span> <b>[✓ 발송 완료]</b> 클릭</p>
+      <p class="flow-hint">💡 <b>입금자명</b>이 은행 앱 입금 내역과 일치하는지 확인 <span class="arr">→</span> 강의 링크를 이메일로 발송 <span class="arr">→</span> <b>[✓ 발송 완료]</b> 클릭</p>
 
       <!-- 스탯 -->
       <div class="stats">
@@ -1441,11 +1441,11 @@ olist.addEventListener('click', function(e){
   if(actBtn){ changeStatus(actBtn.getAttribute('data-id'), actBtn.getAttribute('data-act')); }
 });
 
-/* ============ 전자책 메일 (재)발송 ============ */
+/* ============ 강의 링크 메일 (재)발송 ============ */
 function resendOrder(id, btn){
   if(btn){ btn.disabled = true; btn.textContent = '발송 중…'; }
   api('resend', { id: id }).then(function(){
-    toast('전자책 메일을 발송했어요 ✉️', 'ok');
+    toast('강의 링크 메일을 발송했어요 ✉️', 'ok');
     loadOrders(false);
   }).catch(function(err){
     if(err.net){ netBanner.hidden = false; }
