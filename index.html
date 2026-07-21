@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>진짜 같은 AI 영상 만들기 — 실존 인물 얼굴 그대로, 영상 강의 3강</title>
-<meta name="description" content="쇼츠 1개 조회수 1,194만을 만든 AI 패러디 영상 — 메시·트럼프·김정은 얼굴을 그대로, 목소리까지 똑같이 만드는 법. 시작 이미지부터 인물 고정, 목소리 입히기, 자연스러운 이어붙이기까지 영상 강의 3강에 전부. 입금 확인 즉시 강의 링크 자동 발송. 13,900원.">
+<meta name="description" content="쇼츠 1개 조회수 1,194만을 만든 AI 패러디 영상 — 메시·트럼프·김정은 얼굴을 그대로, 목소리까지 똑같이 만드는 법. 시작 이미지부터 인물 고정, 목소리 입히기, 자연스러운 이어붙이기까지 영상 강의 3강에 전부. 입금 확인 즉시 강의 링크 자동 발송. 9,900원.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hongmangbo.vercel.app/">
 <meta property="og:title" content="진짜 같은 AI 영상 만들기 — 그 밈, 오늘 밤 당신도 만든다">
-<meta property="og:description" content="편집 기술 0, 실존 인물 얼굴 그대로. 영상 강의 3강 그대로 따라하면 끝. 입금 즉시 강의 링크 자동 발송, 13,900원.">
+<meta property="og:description" content="편집 기술 0, 실존 인물 얼굴 그대로. 영상 강의 3강 그대로 따라하면 끝. 입금 즉시 강의 링크 자동 발송, 9,900원.">
 <meta property="og:image" content="https://hongmangbo.vercel.app/assets/hero-messi-musk.jpg">
 <meta property="og:locale" content="ko_KR">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -196,6 +196,34 @@ h2{
 .ticker__chunk .star{color:var(--yellow)}
 .ticker--red .ticker__chunk .star{color:var(--navy)}
 @keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ============ DIFF (차별화) ============ */
+.diff{background:#07080D;color:#fff;padding:clamp(64px,11vw,104px) 0}
+.diff-head{text-align:center;max-width:680px;margin:0 auto 44px}
+.diff-head .eyebrow{justify-content:center;display:inline-flex;color:var(--yellow)}
+.diff-head .eyebrow::before{background:var(--yellow)}
+.diff-head h2{font-size:clamp(1.7rem,6vw,2.6rem)}
+.diff-head h2 .hl{color:var(--yellow)}
+.diff-head p{font-size:clamp(.98rem,3vw,1.12rem);color:rgba(255,255,255,.65);margin-top:14px;line-height:1.7}
+.diff-grid{display:grid;gap:16px;max-width:900px;margin:0 auto}
+@media(min-width:760px){.diff-grid{grid-template-columns:1fr 1fr;gap:20px}}
+.diff-card{border-radius:20px;padding:28px 26px;border:1.5px solid}
+.diff-card h3{font-size:1.15rem;font-weight:900;letter-spacing:-.02em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.diff-card ul{list-style:none;display:grid;gap:12px}
+.diff-card li{display:flex;gap:11px;align-items:flex-start;font-size:.96rem;line-height:1.55;font-weight:600}
+.diff-card li .ic{flex:none;font-weight:900}
+.diff-bad{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.12)}
+.diff-bad h3{color:rgba(255,255,255,.72)}
+.diff-bad li{color:rgba(255,255,255,.5)}
+.diff-bad li .ic{color:#8A8F9E}
+.diff-good{background:linear-gradient(160deg,rgba(255,214,69,.14),rgba(230,0,45,.1));border-color:rgba(255,214,69,.5);box-shadow:0 24px 60px -26px rgba(255,214,69,.25)}
+.diff-good h3{color:var(--yellow)}
+.diff-good li{color:#fff}
+.diff-good li .ic{color:var(--yellow)}
+.diff-punch{text-align:center;max-width:720px;margin:40px auto 0}
+.diff-punch p{font-size:clamp(1.05rem,3.4vw,1.4rem);font-weight:900;letter-spacing:-.02em;line-height:1.5}
+.diff-punch p .u{background:linear-gradient(transparent 62%,rgba(255,214,69,.45) 0);padding:0 3px}
+.diff-punch .btn{margin-top:26px}
 
 /* ============ PROOF ============ */
 .proof{background:var(--navy);color:#fff;padding:clamp(76px,13vw,128px) 0;position:relative;overflow:hidden}
@@ -685,18 +713,18 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
           <span class="pill pill--solid">영상 강의 · 3강</span>
           <span class="pill">편집 기술 0</span>
           <span class="pill">입금 즉시 링크 발송</span>
-          <span class="pill">13,900원</span>
+          <span class="pill">9,900원</span>
         </div>
         <h1 class="reveal" style="--d:.05s">그 화제의 AI 밈,<br>오늘 밤<br><span class="hl">당신도</span> 만든다</h1>
         <p class="hero-sub reveal" style="--d:.1s">
-          유튜브·틱톡·인스타를 뒤집어 놓은 그 AI 영상 —
-          알고 보면 <strong>메시·트럼프·김정은 얼굴 그대로, 목소리까지 똑같이</strong>입니다.
-          어떤 사이트로, 뭘 눌러서, 어떻게 뽑는지
+          남들 AI 영상은 딱 봐도 티가 나죠. 이건 다릅니다 —
+          <strong>메시·트럼프·김정은 얼굴 그대로, 목소리까지 똑같이</strong>,
+          "진짜야?" 소리 듣는 퀄리티로 뽑는 법을
           영상 강의 3강에 처음부터 끝까지 화면 그대로 담았습니다.
           <strong>유행이 식기 전, 올라탈 타이밍은 지금입니다.</strong>
         </p>
         <div class="hero-cta reveal" style="--d:.15s">
-          <a class="btn btn--black" href="#apply">13,900원으로 시작하기 <span class="arr">→</span></a>
+          <a class="btn btn--black" href="#apply">9,900원으로 시작하기 <span class="arr">→</span></a>
           <a class="btn btn--ghost" href="#videos">결과물 먼저 구경</a>
         </div>
         <p class="hero-note reveal" style="--d:.2s">가짜 후기 없음 · 마감 임박 아님 · 그냥 내용물로 승부합니다</p>
@@ -717,13 +745,50 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
 <div class="ticker ticker--tilt" aria-hidden="true">
   <div class="ticker__track">
     <div class="ticker__chunk">
-      <span>진짜 같은 AI 영상 만들기 <b class="star">✦</b></span><span>영상 강의 3강 <b class="star">✦</b></span><span>편집 기술 0 <b class="star">✦</b></span><span>실존 인물 얼굴 그대로 <b class="star">✦</b></span><span>입금 즉시 강의 링크 발송 <b class="star">✦</b></span><span>13,900원 <b class="star">✦</b></span>
+      <span>진짜 같은 AI 영상 만들기 <b class="star">✦</b></span><span>영상 강의 3강 <b class="star">✦</b></span><span>편집 기술 0 <b class="star">✦</b></span><span>실존 인물 얼굴 그대로 <b class="star">✦</b></span><span>입금 즉시 강의 링크 발송 <b class="star">✦</b></span><span>9,900원 <b class="star">✦</b></span>
     </div>
     <div class="ticker__chunk">
-      <span>진짜 같은 AI 영상 만들기 <b class="star">✦</b></span><span>영상 강의 3강 <b class="star">✦</b></span><span>편집 기술 0 <b class="star">✦</b></span><span>실존 인물 얼굴 그대로 <b class="star">✦</b></span><span>입금 즉시 강의 링크 발송 <b class="star">✦</b></span><span>13,900원 <b class="star">✦</b></span>
+      <span>진짜 같은 AI 영상 만들기 <b class="star">✦</b></span><span>영상 강의 3강 <b class="star">✦</b></span><span>편집 기술 0 <b class="star">✦</b></span><span>실존 인물 얼굴 그대로 <b class="star">✦</b></span><span>입금 즉시 강의 링크 발송 <b class="star">✦</b></span><span>9,900원 <b class="star">✦</b></span>
     </div>
   </div>
 </div>
+
+<!-- ================= DIFF (왜 다른가 · 퀄리티 차별화) ================= -->
+<section class="diff" id="why">
+  <div class="container">
+    <div class="diff-head reveal">
+      <p class="eyebrow">왜 이건 다를까</p>
+      <h2>같은 'AI 영상'이 아닙니다.<br><span class="hl">퀄리티가</span> 다릅니다</h2>
+      <p>대부분의 AI 영상은 <strong style="color:#fff">딱 봐도 AI</strong>죠 — 얼굴은 뭉개지고, 그 사람인 듯 아닌 듯. 이 강의가 가르치는 건 그냥 'AI로 영상 만들기'가 아니라, <strong style="color:#fff">실존 인물을 티 안 나게 뽑아내는 '퀄리티'</strong>입니다.</p>
+    </div>
+
+    <div class="diff-grid reveal" style="--d:.08s">
+      <div class="diff-card diff-bad">
+        <h3>😵‍💫 흔한 AI 영상</h3>
+        <ul>
+          <li><span class="ic">✕</span><span>딱 봐도 AI티 — 어색하고 보기 불편함</span></li>
+          <li><span class="ic">✕</span><span>얼굴이 뭉개지고, 그 인물을 못 닮음</span></li>
+          <li><span class="ic">✕</span><span>목소리는 딴 사람 — 몰입이 깨짐</span></li>
+          <li><span class="ic">✕</span><span>무료 툴·그록으론 유명인 얼굴 자체가 거부됨</span></li>
+        </ul>
+      </div>
+      <div class="diff-card diff-good">
+        <h3>🔥 이 강의로 만든 영상</h3>
+        <ul>
+          <li><span class="ic">✓</span><span>"이거 진짜야?" 소리 듣는 리얼한 퀄리티</span></li>
+          <li><span class="ic">✓</span><span>메시·트럼프·김정은 <strong>얼굴 그대로</strong> 안 뭉개짐</span></li>
+          <li><span class="ic">✓</span><span>그 사람 <strong>목소리까지</strong> 똑같이 입힘</span></li>
+          <li><span class="ic">✓</span><span>유명인 얼굴을 거부 안 하는 '그 사이트'와 고정 노하우</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="diff-punch reveal" style="--d:.14s">
+      <p>차이는 결국 <span class="u">퀄리티</span>입니다. 만드는 법이 아니라,<br><span class="u">진짜처럼 뽑는 법</span>을 가르칩니다.</p>
+      <a class="btn btn--red" href="#videos">결과물 퀄리티 직접 보기 <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
 
 <!-- ================= 딥페이크 티저 (숨김 · 캠페인 종료 — 복구하려면 아래 블록 주석만 해제) ================= -->
 <!-- DEEPFAKE-TEASER-HIDDEN
@@ -812,7 +877,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
       </div>
 
       <p style="color:rgba(255,255,255,.55);font-size:.88rem;font-weight:600;line-height:1.6">이런 <strong style="color:#fff">모션 컨트롤</strong> 기법까지 — 전부 이 강의(3강)에 화면 그대로 따라하기로 들어있습니다</p>
-      <a href="#apply" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#FFD645;color:#000;font-weight:900;font-size:.98rem;padding:13px 26px;border-radius:999px;text-decoration:none">13,900원으로 배우기 <span style="font-weight:900">→</span></a>
+      <a href="#apply" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#FFD645;color:#000;font-weight:900;font-size:.98rem;padding:13px 26px;border-radius:999px;text-decoration:none">9,900원으로 배우기 <span style="font-weight:900">→</span></a>
     </div>
   </div>
 </section>
@@ -996,7 +1061,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
     <ol class="flow-steps">
       <li class="flow-step reveal">
         <p class="flow-step__num" aria-hidden="true">1</p>
-        <h3>계좌로 13,900원 이체 <span class="mini">1분</span></h3>
+        <h3>계좌로 9,900원 이체 <span class="mini">1분</span></h3>
         <p>아래 구매 섹션의 계좌로 은행 앱에서 바로 보내주세요.</p>
       </li>
       <li class="flow-step reveal" style="--d:.1s">
@@ -1017,10 +1082,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
 <div class="ticker ticker--red ticker--rev" aria-hidden="true">
   <div class="ticker__track">
     <div class="ticker__chunk">
-      <span>치킨 한 마리보다 쌉니다 <b class="star">✦</b></span><span>₩13,900 <b class="star">✦</b></span><span>단 한 번 결제 <b class="star">✦</b></span><span>구독 아님 <b class="star">✦</b></span><span>입금 즉시 링크 발송 <b class="star">✦</b></span><span>₩13,900 <b class="star">✦</b></span>
+      <span>치킨 한 마리보다 쌉니다 <b class="star">✦</b></span><span>₩9,900 <b class="star">✦</b></span><span>단 한 번 결제 <b class="star">✦</b></span><span>구독 아님 <b class="star">✦</b></span><span>입금 즉시 링크 발송 <b class="star">✦</b></span><span>₩9,900 <b class="star">✦</b></span>
     </div>
     <div class="ticker__chunk">
-      <span>치킨 한 마리보다 쌉니다 <b class="star">✦</b></span><span>₩13,900 <b class="star">✦</b></span><span>단 한 번 결제 <b class="star">✦</b></span><span>구독 아님 <b class="star">✦</b></span><span>입금 즉시 링크 발송 <b class="star">✦</b></span><span>₩13,900 <b class="star">✦</b></span>
+      <span>치킨 한 마리보다 쌉니다 <b class="star">✦</b></span><span>₩9,900 <b class="star">✦</b></span><span>단 한 번 결제 <b class="star">✦</b></span><span>구독 아님 <b class="star">✦</b></span><span>입금 즉시 링크 발송 <b class="star">✦</b></span><span>₩9,900 <b class="star">✦</b></span>
     </div>
   </div>
 </div>
@@ -1038,7 +1103,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
       <p class="price-kind">지식판매 · 디지털 콘텐츠 (영상 강의)</p>
       <p class="price-name">진짜 같은 AI 영상 만들기</p>
       <div class="price-amount">
-        <span class="num">13,900</span><span class="won">원</span>
+        <span class="num">9,900</span><span class="won">원</span>
       </div>
       <p class="price-once">구독 아님 · 이 강의는 한 번 결제로 끝 · 치킨 한 마리보다 쌉니다</p>
 
@@ -1072,9 +1137,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
       <div class="apply-side reveal">
         <p class="eyebrow">06 — 구매</p>
         <h2>지금 입금하면<br>1분 뒤 메일함에</h2>
-        <p class="section-sub">아래 계좌로 13,900원을 보내고 입금 완료 버튼만 눌러주세요. <strong>영상 강의 3강 시청 링크</strong>가 이메일로 즉시 자동 발송됩니다.</p>
+        <p class="section-sub">아래 계좌로 9,900원을 보내고 입금 완료 버튼만 눌러주세요. <strong>영상 강의 3강 시청 링크</strong>가 이메일로 즉시 자동 발송됩니다.</p>
         <ol class="mini-steps">
-          <li><span class="n">1</span>아래 계좌로 13,900원 이체</li>
+          <li><span class="n">1</span>아래 계좌로 9,900원 이체</li>
           <li><span class="n">2</span>입금자명 + 이메일 적고 "입금 완료" 버튼</li>
           <li><span class="n">3</span>이메일로 강의 링크 즉시 발송 — 스팸함도 확인!</li>
         </ol>
@@ -1118,7 +1183,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
               </div>
               <button type="button" class="copy-btn" id="copyAcct">계좌 복사</button>
             </div>
-            <div class="bank-amount"><span>보내실 금액</span><strong>13,900원</strong></div>
+            <div class="bank-amount"><span>보내실 금액</span><strong>9,900원</strong></div>
           </div>
           <div class="bank-warn" id="bankWarn">계좌 정보를 불러오지 못했어요. 새로고침 한 번만 부탁드려요!</div>
 
@@ -1177,9 +1242,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
     </div>
     <div class="faq-list">
       <details class="faq-item reveal">
-        <summary><span class="q">AI 사이트 이용료도 13,900원에 포함인가요?</span><span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <summary><span class="q">AI 사이트 이용료도 9,900원에 포함인가요?</span><span class="faq-toggle" aria-hidden="true">+</span></summary>
         <div class="faq-body">
-          아니요, <strong>포함되지 않습니다.</strong> 13,900원은 영상 강의(사이트 안내 + 사용법 + 인물 고정·목소리 노하우 + 1:1 이메일 지원) 가격입니다.
+          아니요, <strong>포함되지 않습니다.</strong> 9,900원은 영상 강의(사이트 안내 + 사용법 + 인물 고정·목소리 노하우 + 1:1 이메일 지원) 가격입니다.
           안내해드리는 AI 영상 생성 사이트는 판매자와 무관한 제3자 서비스이며, 해당 사이트의 구독료·이용료는 별도입니다.
           무료 체험 범위와 요금제 정보는 강의에서 자세히 안내합니다.
         </div>
@@ -1249,7 +1314,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.55);padding:64px 0 130px}
 <div class="ctabar" id="ctabar">
   <div class="ctabar-price">
     <span class="l">영상 강의 3강 · 즉시 링크 발송</span>
-    <span class="p">₩13,900</span>
+    <span class="p">₩9,900</span>
   </div>
   <a class="btn btn--red" href="#apply">바로 구매하기</a>
 </div>
